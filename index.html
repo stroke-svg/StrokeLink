@@ -47,30 +47,58 @@
         </nav>
 
         <section id="reg" class="tab-content active glass p-8 shadow-2xl">
-            <h2 class="text-xl font-bold mb-6 text-green-800 flex items-center gap-2 italic">
-                <span>📝</span> Pasien Baru
-            </h2>
-            <form id="formReg" class="grid grid-cols-2 gap-4">
-                <input type="text" name="rm" placeholder="No. RM" class="p-3 rounded-xl bg-white/60 border-none shadow-inner" required>
-                <input type="text" name="nama" placeholder="Nama Pasien" class="p-3 rounded-xl bg-white/60 border-none shadow-inner" required>
-                <select name="bed" class="p-3 rounded-xl bg-white/60 border-none shadow-inner" required>
-                    <option value="">Pilih Bed</option>
-                    <option>301</option><option>302-1</option><option>302-2</option><option>302-3</option><option>302-4</option><option>302-5</option><option>302-6</option>
-                    <option>303-1</option><option>303-2</option><option>303-3</option><option>303-4</option><option>303-5</option><option>303-6</option>
-                    <option>304-1</option><option>304-2</option><option>304-3</option><option>304-4</option><option>304-5</option><option>304-6</option>
-                </select>
-                <input type="number" name="bb" placeholder="BB (kg)" class="p-3 rounded-xl bg-white/60 border-none shadow-inner">
-                <input type="text" name="dpjp" placeholder="Nama DPJP" class="p-3 rounded-xl bg-white/60 border-none shadow-inner col-span-2">
-                <select name="jaminan" class="p-3 rounded-xl bg-white/60 border-none shadow-inner">
-                    <option>BPJS Dinas AD</option><option>BPJS Purn AD</option><option>BPJS Dinas AL</option><option>BPJS Purn AL</option>
-                    <option>BPJS Dinas AU</option><option>BPJS Purn AU</option><option>BPJS Mandiri</option><option>Tunai/Umum</option>
-                </select>
-                <select name="agama" class="p-3 rounded-xl bg-white/60 border-none shadow-inner">
-                    <option>Islam</option><option>Protestan</option><option>Katolik</option><option>Hindu</option><option>Budha</option><option>Khonghucu</option>
-                </select>
-                <button type="button" onclick="kirimData()" id="btnSimpan" class="col-span-2 bg-green-700 text-white font-black py-4 rounded-2xl shadow-lg mt-4 hover:bg-green-800 transition-all active:scale-95 uppercase tracking-widest text-sm">Simpan Data Pasien</button>
-            </form>
-        </section>
+    <h2 class="text-xl font-bold mb-6 text-green-800 flex items-center gap-2 italic">
+        <span>📝</span> Registrasi Pasien Baru
+    </h2>
+    <form id="formReg" class="grid grid-cols-2 gap-4">
+        <input type="text" name="rm" placeholder="No. Rekam Medis" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm" required>
+        <input type="text" name="nama" placeholder="Nama Lengkap Pasien" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm" required>
+        
+        <select name="bed" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm" required>
+            <option value="">Pilih Bed</option>
+            <option>301</option><option>302-1</option><option>302-2</option><option>302-3</option><option>302-4</option><option>302-5</option><option>302-6</option>
+            <option>303-1</option><option>303-2</option><option>303-3</option><option>303-4</option><option>303-5</option><option>303-6</option>
+            <option>304-1</option><option>304-2</option><option>304-3</option><option>304-4</option><option>304-5</option><option>304-6</option>
+        </select>
+        <input type="number" name="bb" placeholder="BB (kg)" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm">
+
+        <input type="text" name="diagnosa" placeholder="Diagnosa Medis" class="p-3 rounded-xl bg-white/60 border-none shadow-inner col-span-2 text-sm" required>
+        
+        <input type="text" name="dpjp" placeholder="Nama DPJP" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm">
+        <select name="spesialisasi" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm font-bold text-blue-800">
+            <option value="">-- Pilih Spesialisasi --</option>
+            <option>Neurologi (Saraf)</option>
+            <option>Bedah Saraf</option>
+            <option>Penyakit Dalam (Interne)</option>
+            <option>Lainnya</option>
+        </select>
+
+        <input type="tel" name="telepon" placeholder="No. Telepon Keluarga" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm">
+        <select name="agama" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm">
+            <option value="">Agama</option>
+            <option>Islam</option><option>Protestan</option><option>Katolik</option><option>Hindu</option><option>Budha</option><option>Khonghucu</option>
+        </select>
+
+        <div class="col-span-1">
+            <select id="selectJaminan" onchange="toggleManualJaminan()" class="w-full p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm">
+                <option value="">Pilih Jaminan</option>
+                <option>BPJS Dinas AD</option><option>BPJS Purn AD</option>
+                <option>BPJS Mandiri</option><option>Tunai/Umum</option>
+                <option value="MANUAL">Lain-lain / Manual...</option>
+            </select>
+        </div>
+        <div id="inputJaminanManual" class="col-span-1 hidden">
+            <input type="text" id="jaminanCustom" placeholder="Sebutkan Jaminan..." class="w-full p-3 rounded-xl bg-green-50 border border-green-200 text-sm font-bold">
+        </div>
+        <input type="hidden" name="jaminan" id="finalJaminan">
+
+        <textarea name="alamat" placeholder="Alamat Lengkap Pasien" class="p-3 rounded-xl bg-white/60 border-none shadow-inner col-span-2 text-sm h-16"></textarea>
+
+        <button type="button" onclick="kirimData()" id="btnSimpan" class="col-span-2 bg-green-700 text-white font-black py-4 rounded-2xl shadow-lg mt-2 hover:bg-green-800 transition-all active:scale-95 uppercase text-xs tracking-widest">
+            Simpan ke Database Unit Stroke
+        </button>
+    </form>
+</section>
 
         <section id="live" class="tab-content glass p-8 shadow-2xl">
             <div class="flex justify-between items-end mb-6">
@@ -130,9 +158,11 @@
                 <span>📲</span> LAPORKAN KE DPJP (WA)
             </button>
 
-            <button onclick="toggleModalObat()" class="w-full bg-red-100 text-red-700 font-black py-4 rounded-3xl border-2 border-red-200 mb-6 flex justify-center items-center gap-2 hover:bg-red-200 transition-all">
-    <span>💊</span> KALKULATOR OBAT EMERGENCY
-</button>
+            <div class="px-2">
+    <button onclick="toggleModalObat()" class="w-full py-2 px-4 rounded-xl border border-red-200 bg-red-50/30 text-red-700 text-[10px] font-black tracking-[0.2em] hover:bg-red-600 hover:text-white transition-all duration-300 flex justify-center items-center gap-2 mb-8 shadow-sm">
+        <span class="text-sm">⚡</span> EMERGENCY DRUG CALCULATOR
+    </button>
+</div>
 
         </section>
 
@@ -168,42 +198,52 @@
         }
 
         async function fetchPasien() {
-            const container = document.getElementById('containerPasien');
-            const loader = document.getElementById('loadingPasien');
-            const dropdown = document.getElementById('selectPasienSOAP');
+    const container = document.getElementById('containerPasien');
+    const loader = document.getElementById('loadingPasien');
+    const dropdown = document.getElementById('selectPasienSOAP');
 
-            try {
-                const res = await fetch(WEB_APP_URL + "?action=getPasienAktif");
-                const data = await res.json();
-                dataGlobal = data;
-                
-                loader.style.display = 'none';
-                container.innerHTML = "";
-                dropdown.innerHTML = '<option value="">-- Cari Nama / No RM --</option>';
+    try {
+        const res = await fetch(WEB_APP_URL + "?action=getPasienAktif");
+        const data = await res.json();
+        dataGlobal = data;
+        
+        loader.style.display = 'none';
+        container.innerHTML = "";
+        dropdown.innerHTML = '<option value="">-- Cari Nama / No RM --</option>';
 
-                data.forEach(p => {
-                    // Populate Live Report
-                    container.innerHTML += `
-                        <div class="bg-white/80 p-5 rounded-[1.5rem] shadow-sm flex justify-between items-center border-l-8 border-blue-500">
-                            <div>
-                                <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">BED ${p[2]}</p>
-                                <p class="font-extrabold text-gray-800 text-lg">${p[3]}</p>
-                                <p class="text-[10px] text-gray-500 font-bold tracking-tighter uppercase">RM: ${p[1]} | DPJP: ${p[6]}</p>
-                            </div>
-                            <button onclick="aksiPulangkan('${p[1]}')" class="bg-red-50 text-red-600 p-3 rounded-2xl text-[10px] font-black border border-red-100 hover:bg-red-600 hover:text-white transition-all">PULANG</button>
-                        </div>`;
-                    
-                    // Populate StrokeCare Dropdown
-                    let opt = document.createElement('option');
-                    opt.value = JSON.stringify(p);
-                    opt.text = `${p[3]} (RM: ${p[1]}) - Bed ${p[2]}`;
-                    dropdown.add(opt);
-                });
+        data.forEach(p => {
+            // Memberikan warna label berbeda berdasarkan spesialisasi
+            const badgeColor = p[7] === "Bedah Saraf" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700";
 
-                let bor = (data.length / 19 * 100).toFixed(1);
-                document.getElementById('borDisplay').innerText = `BOR: ${bor}%`;
-            } catch (e) { loader.innerText = "Database sibuk..."; }
-        }
+            // Render ke Live Report
+            container.innerHTML += `
+                <div class="bg-white/80 p-5 rounded-[1.5rem] shadow-sm flex justify-between items-center border-l-8 ${p[7] === 'Bedah Saraf' ? 'border-red-500' : 'border-blue-500'} animate-fade-in">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">BED ${p[2]}</p>
+                            <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${badgeColor}">${p[7]}</span>
+                        </div>
+                        <p class="font-extrabold text-gray-800 text-lg leading-tight">${p[3]}</p>
+                        <p class="text-[10px] text-gray-500 font-bold tracking-tighter uppercase mt-1">
+                            RM: ${p[1]} | DPJP: ${p[6]}
+                        </p>
+                    </div>
+                    <button onclick="aksiPulangkan('${p[1]}')" class="ml-4 bg-gray-50 text-gray-400 p-3 rounded-2xl text-[9px] font-black border border-gray-100 hover:bg-red-600 hover:text-white transition-all uppercase">
+                        Pulang
+                    </button>
+                </div>`;
+            
+            // Render ke Dropdown StrokeCare
+            let opt = document.createElement('option');
+            opt.value = JSON.stringify(p);
+            opt.text = `${p[3]} (RM: ${p[1]}) - Bed ${p[2]}`;
+            dropdown.add(opt);
+        });
+
+        let bor = (data.length / 19 * 100).toFixed(1);
+        document.getElementById('borDisplay').innerText = `BOR: ${bor}%`;
+    } catch (e) { loader.innerText = "Database sibuk..."; }
+}
 
         async function aksiPulangkan(rm) {
             if(!confirm("Proses pulang untuk RM " + rm + "?")) return;
@@ -318,52 +358,161 @@ function hitungDosisEksak() {
     document.getElementById('hasilHitung').innerHTML = `${hasil.toFixed(2)} <span class="text-sm">${jenis === 'manitol' ? 'cc (Bolus)' : 'cc/jam'}</span>`;
 }
 
+
+const DRUG_CONFIG = {
+    nicardipine: { mg: 10, cc: 50, info: "Nicardipine: Titrasi dimulai 5 mcg/mnt, naikkan 2.5 mcg/mnt tiap 5-15 mnt sampai target TD tercapai." },
+    norepinephrine: { mg: 4, cc: 50, info: "Norepinephrine: Vasopressor kuat. Gunakan Vena Sentral jika memungkinkan untuk cegah nekrosis." },
+    dobutamine: { mg: 250, cc: 50, info: "Dobutamine: Inotropik. Dosis lazim 2.5-20 mcg/kg/mnt. Monitor aritmia." },
+    dopamine: { mg: 200, cc: 50, info: "Dopamine: Dosis inotropik (5-10 mcg/kg/mnt), dosis vasopressor (>10 mcg/kg/mnt)." },
+    manitol: { mg: 100, cc: 500, info: "Manitol 20%: Sediaan 500cc mengandung 100gr Manitol (0.2gr/ml). Diberikan bolus cepat." }
+};
+
+function updateDrugSetting() {
+    const val = document.getElementById('jenisObat').value;
+    const config = DRUG_CONFIG[val];
+    document.getElementById('sediaanMg').value = config.mg;
+    document.getElementById('pengenceranCc').value = config.cc;
+    document.getElementById('boxHasil').classList.add('hidden');
+    
+    // Auto-switch metode untuk Manitol
+    if(val === 'manitol') {
+        document.getElementById('metodeHitung').value = 'mcg_kg_min';
+        document.getElementById('metodeHitung').disabled = true;
+    } else {
+        document.getElementById('metodeHitung').disabled = false;
+    }
+}
+
+function kalkulasiEksak() {
+    const obat = document.getElementById('jenisObat').value;
+    const metode = document.getElementById('metodeHitung').value;
+    const bb = parseFloat(document.getElementById('calcBB').value) || 0;
+    const dosis = parseFloat(document.getElementById('calcDosis').value) || 0;
+    const mg = parseFloat(document.getElementById('sediaanMg').value) || 0;
+    const cc = parseFloat(document.getElementById('pengenceranCc').value) || 0;
+
+    if (!dosis || !mg || !cc) return alert("Lengkapi Dosis dan Sediaan!");
+
+    let kecepatan = 0;
+    let rumusteks = "";
+    const konsentrasi = (mg * 1000) / cc; // mcg/cc
+
+    if (obat === 'manitol') {
+        // Manitol dihitung dalam Gram
+        // Rumus: (Dosis Gram * BB) / 0.2
+        kecepatan = (dosis * bb) / 0.2;
+        rumusteks = `<b>${DRUG_CONFIG[obat].info}</b><br><br>Rumus Bolus: (Dosis ${dosis}gr x BB ${bb}kg) / 0.2 (Konsentrasi Manitol 20%) = <b>${kecepatan.toFixed(1)} cc Bolus.</b>`;
+    } else {
+        if (metode === "mcg_kg_min") {
+            if (!bb) return alert("BB wajib diisi!");
+            kecepatan = (dosis * bb * 60) / konsentrasi;
+            rumusteks = `<b>${DRUG_CONFIG[obat].info}</b><br><br>1. Konsentrasi: (${mg}mg x 1000) / ${cc}cc = ${konsentrasi} mcg/cc.<br>2. Rumus: (Dosis ${dosis} x BB ${bb} x 60mnt) / ${konsentrasi} mcg/cc = <b>${kecepatan.toFixed(2)} cc/jam.</b>`;
+        } else {
+            kecepatan = (dosis * 60) / konsentrasi;
+            rumusteks = `<b>${DRUG_CONFIG[obat].info}</b><br><br>1. Konsentrasi: (${mg}mg x 1000) / ${cc}cc = ${konsentrasi} mcg/cc.<br>2. Rumus Flat: (Dosis ${dosis}mcg/mnt x 60mnt) / ${konsentrasi} mcg/cc = <b>${kecepatan.toFixed(2)} cc/jam.</b>`;
+        }
+    }
+
+    document.getElementById('hasilHitung').innerHTML = `${kecepatan.toFixed(2)} <span class="text-sm">${obat === 'manitol' ? 'cc (BOLUS)' : 'cc/jam'}</span>`;
+    document.getElementById('penjelasanRumus').innerHTML = rumusteks;
+    document.getElementById('boxHasil').classList.remove('hidden');
+}
+
+    function toggleManualJaminan() {
+    const select = document.getElementById('selectJaminan');
+    const manualDiv = document.getElementById('inputJaminanManual');
+    const finalInput = document.getElementById('finalJaminan');
+    const customInput = document.getElementById('jaminanCustom');
+
+    if (select.value === "MANUAL") {
+        manualDiv.classList.remove('hidden');
+        finalInput.value = customInput.value;
+    } else {
+        manualDiv.classList.add('hidden');
+        finalInput.value = select.value;
+    }
+}
+
+// Sinkronisasi ketikan manual ke database
+document.getElementById('jaminanCustom')?.addEventListener('input', function() {
+    document.getElementById('finalJaminan').value = this.value;
+});
+
+// Pastikan saat form di-reset, input manual juga tersembunyi
+function resetFormCustom() {
+    document.getElementById('formReg').reset();
+    document.getElementById('inputJaminanManual').classList.add('hidden');
+}
+
     </script>
 
-    <div id="modalObat" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-    <div class="glass w-full max-w-md p-6 shadow-2xl bg-white/90">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-black text-red-800">💊 KALKULATOR EMERGENCY</h3>
-            <button onclick="toggleModalObat()" class="text-gray-500 hover:text-red-600 font-bold">TUTUP</button>
+    <div id="modalObat" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+    <div class="glass w-full max-w-lg p-6 overflow-y-auto max-h-[95vh] shadow-2xl bg-white/95 border-red-100">
+        <div class="flex justify-between items-center mb-6 border-b border-red-100 pb-4">
+            <div>
+                <h3 class="text-xl font-black text-red-800 uppercase tracking-tighter">Clinical Drug Calculator</h3>
+                <p class="text-[9px] text-gray-500 font-bold uppercase">Evidence-Based Nursing Protocol - Unit Stroke</p>
+            </div>
+            <button onclick="toggleModalObat()" class="h-8 w-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:bg-red-600 hover:text-white transition-all">✕</button>
         </div>
 
-        <div class="space-y-4">
-            <div>
-                <label class="text-[10px] font-bold text-gray-400">PILIH OBAT :</label>
-                <select id="jenisObat" onchange="switchObat()" class="w-full p-3 rounded-xl bg-gray-100 border-none font-bold">
-                    <option value="nicardipine">Nicardipine (Perdipine)</option>
-                    <option value="norepinephrine">Norepinephrine (Vascon)</option>
-                    <option value="manitol">Manitol (20%)</option>
-                </select>
-            </div>
-
+        <div class="space-y-5">
             <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase">BB Pasien (kg)</label>
-                    <input type="number" id="calcBB" class="w-full p-3 rounded-xl bg-gray-100 border-none font-bold" placeholder="kg">
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-gray-400 uppercase ml-1">Pilih Obat</label>
+                    <select id="jenisObat" onchange="updateDrugSetting()" class="w-full p-3 bg-gray-50 rounded-xl text-xs font-bold border-none shadow-inner focus:ring-2 focus:ring-red-500">
+                        <option value="nicardipine">Nicardipine (Perdipine)</option>
+                        <option value="norepinephrine">Norepinephrine (Vascon)</option>
+                        <option value="dobutamine">Dobutamine (Dobuject)</option>
+                        <option value="dopamine">Dopamine</option>
+                        <option value="manitol">Manitol 20%</option>
+                    </select>
                 </div>
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase">Dosis Target</label>
-                    <input type="number" id="calcDosis" class="w-full p-3 rounded-xl bg-gray-100 border-none font-bold" placeholder="Dosis">
-                    <span id="unitDosis" class="text-[9px] font-bold text-red-500">mcg/kg/mnt</span>
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-gray-400 uppercase ml-1">Metode Hitung</label>
+                    <select id="metodeHitung" class="w-full p-3 bg-gray-50 rounded-xl text-xs font-bold border-none shadow-inner">
+                        <option value="mcg_kg_min">mcg/kgBB/menit</option>
+                        <option value="mcg_min">mcg/menit (Flat)</option>
+                    </select>
                 </div>
             </div>
 
-            <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase">Sediaan & Pengenceran</label>
-                <div class="grid grid-cols-2 gap-2 mt-1">
-                    <input type="number" id="sediaanMg" placeholder="Sediaan (mg)" class="p-3 rounded-xl bg-gray-100 border-none text-xs">
-                    <input type="number" id="pengenceranCc" placeholder="Cairan (cc)" class="p-3 rounded-xl bg-gray-100 border-none text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                    <label class="text-[9px] font-black text-blue-800 uppercase">Berat Badan (kg)</label>
+                    <input type="number" id="calcBB" class="w-full bg-transparent border-none focus:ring-0 text-2xl font-black text-blue-900" placeholder="0">
                 </div>
-                <p class="text-[9px] text-gray-400 mt-1 italic">*Contoh: 10mg dalam 50cc Spuit Pump</p>
+                <div class="bg-red-50/50 p-4 rounded-2xl border border-red-100">
+                    <label class="text-[9px] font-black text-red-800 uppercase">Dosis Target</label>
+                    <input type="number" id="calcDosis" class="w-full bg-transparent border-none focus:ring-0 text-2xl font-black text-red-900" placeholder="0">
+                </div>
             </div>
 
-            <div class="bg-red-50 p-4 rounded-2xl text-center border border-red-100">
-                <p class="text-[10px] font-black text-red-800 uppercase mb-1">Kecepatan Syringe Pump</p>
-                <h4 id="hasilHitung" class="text-3xl font-black text-blue-800">0.00 <span class="text-sm">cc/jam</span></h4>
+            <div class="p-4 bg-gray-100/50 rounded-2xl">
+                <p class="text-[9px] font-black text-gray-400 uppercase mb-3 text-center tracking-widest">Sediaan & Pengenceran (Bisa Diedit)</p>
+                <div class="flex items-center gap-3">
+                    <input type="number" id="sediaanMg" placeholder="mg" class="w-full p-3 rounded-xl bg-white border-none text-center font-bold shadow-sm">
+                    <span class="font-bold text-gray-300">dalam</span>
+                    <input type="number" id="pengenceranCc" placeholder="cc" class="w-full p-3 rounded-xl bg-white border-none text-center font-bold shadow-sm">
+                </div>
             </div>
 
-            <button onclick="hitungDosisEksak()" class="w-full bg-red-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition-all">HITUNG SEKARANG</button>
+            <div id="boxHasil" class="hidden animate-in fade-in zoom-in duration-300">
+                <div class="bg-green-700 p-5 rounded-[2rem] text-center text-white shadow-xl shadow-green-100 mb-4">
+                    <p class="text-[10px] font-bold uppercase opacity-70 tracking-widest mb-1">Kecepatan Syringe Pump</p>
+                    <h4 id="hasilHitung" class="text-4xl font-black italic">0.00 <span class="text-sm not-italic opacity-80 uppercase">cc/jam</span></h4>
+                </div>
+                
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="h-2 w-2 bg-green-500 rounded-full"></span>
+                        <p class="text-[10px] font-black text-gray-800 uppercase">Clinical Rationale :</p>
+                    </div>
+                    <div id="penjelasanRumus" class="text-[11px] leading-relaxed text-gray-600 bg-gray-50 p-3 rounded-lg border-l-4 border-green-500"></div>
+                </div>
+            </div>
+
+            <button onclick="kalkulasiEksak()" class="w-full bg-black text-white py-5 rounded-2xl font-black shadow-lg hover:bg-gray-800 transition-all active:scale-95 text-xs tracking-[0.2em] uppercase">Proses Kalkulasi</button>
         </div>
     </div>
 </div>
