@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)), 
+                        url('https://rspadgs.mil.id/thumbs/680x420c/2025-12/gedung-buat-plakat.jpg');
+            background-size: cover; background-attachment: fixed;
+        }
+        .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(8px); border: 1px solid white; }
+        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .logo-breathe { animation: breathe 3s ease-in-out infinite; }
+    </style>
+</head>
+<body class="p-4 bg-gray-100 min-h-screen">
+
+    <div class="max-w-md mx-auto mb-10 text-center">
+        <img src="https://rspadgs.mil.id/thumbs/480x360c/2024-12/bersyukur.png" class="h-20 mx-auto logo-breathe">
+        <h1 class="text-2xl font-bold text-green-800">STROKE-LINK</h1>
+        <p class="text-xs font-bold uppercase">Unit Stroke RSPAD Gatot Soebroto</p>
+    </div>
+
+    <div class="max-w-2xl mx-auto glass p-6 rounded-3xl shadow-lg mb-6">
+        <h2 class="font-bold text-lg mb-4 text-green-700">📋 Registrasi Pasien Baru</h2>
+        <form id="formReg" class="grid grid-cols-2 gap-3">
+            <input type="text" name="rm" placeholder="No RM" class="p-2 rounded border" required>
+            <input type="text" name="nama" placeholder="Nama Lengkap" class="p-2 rounded border" required>
+            <select name="bed" class="p-2 rounded border" required>
+                <option value="">Pilih Bed</option>
+                <option>301</option><option>302-1</option><option>302-2</option><option>302-3</option><option>302-4</option><option>302-5</option><option>302-6</option>
+                <option>303-1</option><option>303-2</option><option>303-3</option><option>303-4</option><option>303-5</option><option>303-6</option>
+                <option>304-1</option><option>304-2</option><option>304-3</option><option>304-4</option><option>304-5</option><option>304-6</option>
+            </select>
+            <input type="number" name="bb" placeholder="BB (kg)" class="p-2 rounded border">
+            <select name="jaminan" class="p-2 rounded border">
+                <option>BPJS Dinas AD</option><option>BPJS Purn AD</option><option>BPJS Mandiri</option><option>Tunai/Umum</option>
+            </select>
+            <select name="agama" class="p-2 rounded border">
+                <option>Islam</option><option>Protestan</option><option>Katolik</option><option>Hindu</option><option>Budha</option><option>Khonghucu</option>
+            </select>
+            <button type="button" onclick="submitReg()" class="col-span-2 bg-green-600 text-white p-3 rounded-xl font-bold">Daftarkan Pasien</button>
+        </form>
+    </div>
+
+    <div class="max-w-2xl mx-auto glass p-6 rounded-3xl shadow-lg mb-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="font-bold text-lg text-blue-700">🏥 Live Report Pasien</h2>
+            <div id="borBadge" class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">BOR: --%</div>
+        </div>
+        <div id="listPasien" class="space-y-2">
+            </div>
+    </div>
+
+    <div class="max-w-2xl mx-auto glass p-6 rounded-3xl shadow-lg">
+        <h2 class="font-bold text-lg mb-4 text-red-700">🧠 StrokeCare Tool</h2>
+        
+        <input type="text" id="searchBox" onkeyup="cariPasien()" placeholder="Cari Nama/RM..." class="w-full p-3 rounded-xl border mb-4 shadow-inner">
+        
+        <div class="bg-white/50 p-4 rounded-xl mb-4">
+            <p class="font-bold mb-2">Kalkulator GCS</p>
+            <div class="grid grid-cols-3 gap-2">
+                <input type="number" id="gcsE" placeholder="E" class="p-2 border rounded" onchange="autoGcs()">
+                <input type="number" id="gcsV" placeholder="V" class="p-2 border rounded" onchange="autoGcs()">
+                <input type="number" id="gcsM" placeholder="M" class="p-2 border rounded" onchange="autoGcs()">
+            </div>
+            <p class="mt-2 text-sm font-bold">Total GCS: <span id="totalGcs">0</span></p>
+        </div>
+
+        <button onclick="formatWA()" class="w-full bg-green-500 text-white p-3 rounded-xl font-bold flex justify-center items-center gap-2">
+            📲 Kirim Laporan SBAR via WhatsApp
+        </button>
+    </div>
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwUolsnb_KceU2xGz30P43srUAVIracq-PwR7BlYs9WXAQzFB59EaURgQ8oFJWwi3iM/exec"; 
+        let dataAktif = [];
+
+        function autoGcs() {
+            let e = parseInt(document.getElementById('gcsE').value) || 0;
+            let v = parseInt(document.getElementById('gcsV').value) || 0;
+            let m = parseInt(document.getElementById('gcsM').value) || 0;
+            document.getElementById('totalGcs').innerText = e + v + m;
+        }
+
+        async function loadPasien() {
+            // Simulasi panggil data dari spreadsheet
+            google.script.run.withSuccessHandler(function(res) {
+                dataAktif = res;
+                renderPasien();
+            }).getPasienAktif();
+        }
+
+        function renderPasien() {
+            const container = document.getElementById('listPasien');
+            container.innerHTML = "";
+            dataAktif.forEach(p => {
+                container.innerHTML += `
+                <div class="flex justify-between items-center p-3 bg-white/60 rounded-xl border border-blue-100">
+                    <div>
+                        <p class="font-bold text-sm">${p[2]} - ${p[3]}</p>
+                        <p class="text-xs text-gray-500">RM: ${p[1]} | ${p[4]}</p>
+                    </div>
+                    <button onclick="checkout('${p[1]}')" class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-lg font-bold">Pulangkan</button>
+                </div>`;
+            });
+            // Update BOR (Total Bed 19)
+            let bor = (dataAktif.length / 19 * 100).toFixed(1);
+            document.getElementById('borBadge').innerText = `BOR: ${bor}%`;
+        }
+
+        function submitReg() {
+            const form = document.getElementById('formReg');
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+            params.append('action', 'registrasi');
+
+            fetch(WEB_APP_URL, { method: 'POST', body: params })
+            .then(() => {
+                alert("Pasien Berhasil Terdaftar!");
+                form.reset();
+                loadPasien();
+            });
+        }
+
+        function checkout(rm) {
+            if(confirm("Pulangkan pasien ini?")) {
+                google.script.run.withSuccessHandler(loadPasien).pulangkanPasien(rm);
+            }
+        }
+
+        // Jalankan saat load
+        window.onload = loadPasien;
+    </script>
+</body>
+</html>
