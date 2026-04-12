@@ -32,6 +32,43 @@
 </head>
 <body class="min-h-screen pb-12">
 
+    <div id="loginOverlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-green-950">
+    <div class="glass w-full max-w-xs p-8 text-center border-white/20 shadow-2xl">
+        <img src="https://rspadgs.mil.id/thumbs/480x360c/2024-12/bersyukur.png" class="h-20 mx-auto mb-6 logo-breathe">
+        <h2 class="text-white font-black text-sm tracking-[0.3em] mb-8 uppercase">Stroke-Link Access</h2>
+        
+        <div class="space-y-4">
+    <input type="text" id="userName" placeholder="Nama Perawat" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white font-bold text-center">
+    <input type="password" id="pinInput" placeholder="PIN Rahasia" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white font-black text-center">
+    
+    <button onclick="checkAccess()" class="w-full py-4 bg-green-500 text-white font-black rounded-2xl shadow-lg">OTORISASI PERAWAT</button>
+    
+    <div class="flex items-center my-2">
+        <hr class="flex-1 border-white/20">
+        <span class="px-3 text-[10px] text-white/40 font-bold">ATAU</span>
+        <hr class="flex-1 border-white/20">
+    </div>
+
+    <button onclick="aksesTamu()" class="w-full py-3 bg-white/10 text-white border border-white/40 rounded-2xl font-bold text-xs hover:bg-white/20 transition-all">MASUK SEBAGAI PENGUNJUNG</button>
+</div>
+        <p id="loginError" class="text-red-400 text-[10px] font-bold mt-4 hidden">DATA TIDAK VALID!</p>
+    </div>
+</div>
+
+<div id="userBadge" class="fixed top-4 right-4 z-[60] hidden">
+    <div class="flex items-center gap-2">
+        <div class="bg-black/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 flex items-center gap-2">
+            <span class="h-2 w-2 bg-green-400 rounded-full animate-pulse"></span>
+            <span id="displayUserName" class="text-[10px] font-black text-white uppercase tracking-tighter"></span>
+        </div>
+        <button onclick="logout()" class="bg-red-600/80 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-all active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+        </button>
+    </div>
+</div>
+
     <header class="text-center pt-10 mb-8">
         <img src="https://rspadgs.mil.id/thumbs/480x360c/2024-12/bersyukur.png" class="h-24 mx-auto logo-breathe mb-4" alt="Logo RSPAD">
         <h1 class="text-4xl font-extrabold text-green-900 tracking-tight">STROKE-LINK</h1>
@@ -54,12 +91,9 @@
         <input type="text" name="rm" placeholder="No. Rekam Medis" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm" required>
         <input type="text" name="nama" placeholder="Nama Lengkap Pasien" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm" required>
         
-        <select name="bed" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm" required>
-            <option value="">Pilih Bed</option>
-            <option>301</option><option>302-1</option><option>302-2</option><option>302-3</option><option>302-4</option><option>302-5</option><option>302-6</option>
-            <option>303-1</option><option>303-2</option><option>303-3</option><option>303-4</option><option>303-5</option><option>303-6</option>
-            <option>304-1</option><option>304-2</option><option>304-3</option><option>304-4</option><option>304-5</option><option>304-6</option>
-        </select>
+        <select name="bed" id="selectBedReg" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm" required>
+    <option value="">Mengambil daftar bed...</option>
+</select>
         <input type="number" name="bb" placeholder="BB (kg)" class="p-3 rounded-xl bg-white/60 border-none shadow-inner text-sm">
 
         <input type="text" name="diagnosa" placeholder="Diagnosa Medis" class="p-3 rounded-xl bg-white/60 border-none shadow-inner col-span-2 text-sm" required>
@@ -170,52 +204,141 @@
 
     <script>
         // MASUKKAN URL WEB APP ANDA DI SINI
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxJA3MrYryOk7wlxbX3C8O6x9mfbKFbzuZwDQ7kkVEKyohKjQ3DWL0gWVcwDoqxy-mh/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby2l4IXu5zo9pXj-Sy1dnPrNQXHASrpH3BEAUReJCFnR2fErN0-ktjCIIbAySzxREk6/exec";
         let dataGlobal = [];
 
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active-tab-btn'));
-            document.getElementById(tabId).classList.add('active');
-            document.getElementById('btn-' + tabId).classList.add('active-tab-btn');
-            if(tabId === 'live' || tabId === 'care') fetchPasien();
+
+
+        async function updateAvailableBeds() {
+    const selectBed = document.getElementById('selectBedReg');
+    try {
+        const res = await fetch(WEB_APP_URL + "?action=getAvailableBeds");
+        const beds = await res.json();
+        
+        selectBed.innerHTML = '<option value="">-- Pilih Bed Tersedia --</option>';
+        
+        if (beds.length === 0) {
+            selectBed.innerHTML = '<option value="">KAMAR PENUH</option>';
+        } else {
+            beds.forEach(bed => {
+                let opt = document.createElement('option');
+                opt.value = bed;
+                opt.text = "Bed " + bed;
+                selectBed.add(opt);
+            });
         }
+    } catch (e) {
+        selectBed.innerHTML = '<option value="">Gagal memuat bed</option>';
+    }
+}
+
+        function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active-tab-btn'));
+    
+    document.getElementById(tabId).classList.add('active');
+    document.getElementById('btn-' + tabId).classList.add('active-tab-btn');
+    
+    // TAMBAHKAN INI: Jika buka tab registrasi, ambil data bed terbaru
+    if(tabId === 'reg') updateAvailableBeds(); 
+    
+    if(tabId === 'live' || tabId === 'care') fetchPasien();
+}
 
         async function kirimData() {
-            const btn = document.getElementById('btnSimpan');
-            const form = document.getElementById('formReg');
-            const formData = new FormData(form);
-            const params = new URLSearchParams(formData);
-            btn.disabled = true; btn.innerText = "PROSES...";
+    const btn = document.getElementById('btnSimpan');
+    const form = document.getElementById('formReg');
+    const user = sessionStorage.getItem('currentUser') || "Unknown"; 
+    
+    // Validasi input wajib
+    if (!form.rm.value || !form.nama.value || !form.bed.value) {
+        alert("Mohon lengkapi No. RM, Nama, dan Bed!");
+        return;
+    }
 
-            try {
-                await fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: params });
-                alert("Pasien Berhasil Terdaftar!");
-                form.reset();
-                showTab('live');
-            } catch (e) { alert("Error Koneksi."); } 
-            finally { btn.disabled = false; btn.innerText = "Simpan Data Pasien"; }
-        }
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData);
+    
+    // Menambahkan identitas perawat agar tercatat di Log Database
+    params.append('user_admin', user); 
+    
+    btn.disabled = true; 
+    btn.innerText = "SEDANG MENGIRIM...";
+
+    try {
+        // Menggunakan mode 'no-cors' karena Apps Script tidak mendukung CORS penuh
+        await fetch(WEB_APP_URL, { 
+            method: "POST", 
+            mode: "no-cors", 
+            body: params 
+        });
+        
+        alert("Pasien Berhasil Terdaftar di Unit Stroke!");
+        form.reset();
+        document.getElementById('inputJaminanManual').classList.add('hidden');
+        showTab('live'); // Pindah ke Live Report
+    } catch (e) { 
+        alert("Terjadi kesalahan koneksi database."); 
+    } finally { 
+        btn.disabled = false; 
+        btn.innerText = "Simpan ke Database Unit Stroke"; 
+    }
+}
 
         async function fetchPasien() {
+
+// Tambahkan baris ini di dalam loop data.forEach pada fungsi fetchPasien()
+// agar tamu tetap bisa klik kalkulator dari halaman utama
+if (sessionStorage.getItem('role') === 'guest') {
+    // Tampilkan tombol kalkulator melayang (Floating Button) khusus tamu
+    document.getElementById('floatingCalc').classList.remove('hidden');
+
+    const role = sessionStorage.getItem('role');
+    const floatBtn = document.getElementById('floatingCalc');
+    
+    if (role === 'guest') {
+        // Tampilkan tombol melayang jika user adalah tamu
+        if(floatBtn) floatBtn.classList.remove('hidden');
+    } else {
+        // Sembunyikan jika perawat (karena perawat sudah punya tombol di menu)
+        if(floatBtn) floatBtn.classList.add('hidden');
+    }
+}
+
+
+    
     const container = document.getElementById('containerPasien');
     const loader = document.getElementById('loadingPasien');
     const dropdown = document.getElementById('selectPasienSOAP');
+    const role = sessionStorage.getItem('role'); 
 
     try {
         const res = await fetch(WEB_APP_URL + "?action=getPasienAktif");
-        const data = await res.json();
+        let data = await res.json();
+
+        // --- PROSES SORTING (URUTAN BED) ---
+        // Mengurutkan data berdasarkan Kolom Bed (indeks ke-2)
+        data.sort((a, b) => {
+            return a[2].toString().localeCompare(b[2].toString(), undefined, {
+                numeric: true, 
+                sensitivity: 'base'
+            });
+        });
+
         dataGlobal = data;
-        
         loader.style.display = 'none';
         container.innerHTML = "";
         dropdown.innerHTML = '<option value="">-- Cari Nama / No RM --</option>';
 
         data.forEach(p => {
-            // Memberikan warna label berbeda berdasarkan spesialisasi
             const badgeColor = p[7] === "Bedah Saraf" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700";
 
-            // Render ke Live Report
+            // --- LOGIKA TOMBOL PULANG (Hanya untuk Perawat) ---
+            // Jika role adalah 'guest', tombol tidak akan dibuat (kosong)
+            const tombolPulang = (role !== 'guest') 
+                ? `<button onclick="aksiPulangkan('${p[1]}')" class="ml-4 bg-gray-50 text-gray-400 p-3 rounded-2xl text-[9px] font-black border border-gray-100 hover:bg-red-600 hover:text-white transition-all uppercase">Pulang</button>` 
+                : '';
+
             container.innerHTML += `
                 <div class="bg-white/80 p-5 rounded-[1.5rem] shadow-sm flex justify-between items-center border-l-8 ${p[7] === 'Bedah Saraf' ? 'border-red-500' : 'border-blue-500'} animate-fade-in">
                     <div class="flex-1">
@@ -228,12 +351,9 @@
                             RM: ${p[1]} | DPJP: ${p[6]}
                         </p>
                     </div>
-                    <button onclick="aksiPulangkan('${p[1]}')" class="ml-4 bg-gray-50 text-gray-400 p-3 rounded-2xl text-[9px] font-black border border-gray-100 hover:bg-red-600 hover:text-white transition-all uppercase">
-                        Pulang
-                    </button>
+                    ${tombolPulang}
                 </div>`;
             
-            // Render ke Dropdown StrokeCare
             let opt = document.createElement('option');
             opt.value = JSON.stringify(p);
             opt.text = `${p[3]} (RM: ${p[1]}) - Bed ${p[2]}`;
@@ -242,7 +362,10 @@
 
         let bor = (data.length / 19 * 100).toFixed(1);
         document.getElementById('borDisplay').innerText = `BOR: ${bor}%`;
-    } catch (e) { loader.innerText = "Database sibuk..."; }
+
+    } catch (e) { 
+        loader.innerText = "Gagal memuat data..."; 
+    }
 }
 
         async function aksiPulangkan(rm) {
@@ -444,6 +567,113 @@ function resetFormCustom() {
     document.getElementById('inputJaminanManual').classList.add('hidden');
 }
 
+const SECRET_PIN = "1234"; // Sesuaikan PIN unit Anda
+
+// Fungsi untuk Perawat (Wajib hapus role guest agar menu muncul lagi)
+function checkAccess() {
+    const user = document.getElementById('userName').value;
+    const pin = document.getElementById('pinInput').value;
+    
+    if (user.length > 2 && pin === "1234") {
+        sessionStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('currentUser', user);
+        sessionStorage.removeItem('role'); // HAPUS role guest jika ada
+        loginSuccess(user);
+    } else {
+        alert("PIN Salah!");
+    }
+}
+
+// Fungsi untuk Tamu
+function aksesTamu() {
+    sessionStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem('currentUser', 'Pengunjung');
+    sessionStorage.setItem('role', 'guest'); 
+    loginSuccess('Pengunjung');
+}
+
+function loginSuccess(user) {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('userBadge').classList.remove('hidden');
+    document.getElementById('displayUserName').innerText = user;
+
+    const role = sessionStorage.getItem('role');
+    const btnReg = document.getElementById('btn-reg');  // ID Tombol Navigasi Registrasi
+    const btnCare = document.getElementById('btn-care'); // ID Tombol Navigasi Stroke Care
+
+    if (role === 'guest') {
+        // SEMBUNYIKAN MENU UNTUK TAMU
+        if(btnReg) btnReg.style.display = 'none';
+        if(btnCare) btnCare.style.display = 'none'; // Tambahkan baris ini
+        
+        showTab('live'); // Paksa tamu ke Live Report
+
+        // Tambahkan CSS untuk proteksi tambahan
+        if (!document.getElementById('guestStyle')) {
+            const style = document.createElement('style');
+            style.id = "guestStyle";
+            style.innerHTML = `
+                .btn-pulang, #reg, #care { display: none !important; } 
+                /* #care disembunyikan agar tidak bisa diakses lewat script manual */
+            `;
+            document.head.appendChild(style);
+        }
+    } else {
+        // TAMPILKAN SEMUA UNTUK PERAWAT
+        if(btnReg) btnReg.style.display = 'block';
+        if(btnCare) btnCare.style.display = 'block';
+        
+        const gStyle = document.getElementById('guestStyle');
+        if(gStyle) gStyle.remove();
+    }
+}
+
+// Update fungsi pulangkan untuk menyertakan user
+async function aksiPulangkan(rm) {
+    const user = sessionStorage.getItem('currentUser');
+    if(!confirm("Proses pulang untuk RM " + rm + "?")) return;
+    try {
+        // Kirim RM dan Nama User ke Apps Script
+        await fetch(`${WEB_APP_URL}?action=pulangkan&rm=${rm}&user=${encodeURIComponent(user)}`, { mode: 'no-cors' });
+        alert("Berhasil dipulangkan oleh: " + user);
+        fetchPasien();
+    } catch (e) { alert("Gagal koneksi."); }
+}
+
+// Cek session saat refresh
+window.addEventListener('load', () => {
+    const logged = sessionStorage.getItem('isLoggedIn');
+    const user = sessionStorage.getItem('currentUser');
+    if(logged === 'true') loginSuccess(user);
+});
+
+function logout() {
+    sessionStorage.clear();
+    location.reload(); // Refresh halaman untuk kembali ke layar login
+}
+
+// Jalankan ini setiap kali halaman di-refresh/dibuka
+window.addEventListener('load', () => {
+    const logged = sessionStorage.getItem('isLoggedIn');
+    const user = sessionStorage.getItem('currentUser');
+    
+    if (logged === 'true' && user) {
+        // Jika sudah login, langsung buka aplikasi
+        loginSuccess(user);
+        fetchPasien(); // Ambil data pasien terbaru
+    } else {
+        // Jika belum login, pastikan overlay login muncul
+        document.getElementById('loginOverlay').classList.remove('hidden');
+        document.getElementById('userBadge').classList.add('hidden');
+    }
+});
+
+
+// Tambahkan di bagian paling bawah sebelum tag tutup
+window.addEventListener('load', () => { 
+        updateAvailableBeds(); 
+    });
+
     </script>
 
     <div id="modalObat" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
@@ -517,6 +747,11 @@ function resetFormCustom() {
     </div>
 </div>
 
+<div id="floatingCalc" class="fixed bottom-24 right-6 z-40 hidden">
+    <button onclick="toggleModalObat()" class="bg-red-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center animate-bounce hover:scale-110 transition-all">
+        <span class="text-2xl">💊</span>
+    </button>
+</div>
 
 </body>
 </html>
