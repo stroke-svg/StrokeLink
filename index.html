@@ -25,9 +25,101 @@
             50% { transform: scale(1.05); opacity: 1; }
         }
         .logo-breathe { animation: breathe 4s ease-in-out infinite; }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff; /* Putih solid agar kontras */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 0.8rem 1rem;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05); /* Bayangan halus ke atas */
+            border-top: 1px solid #f3f4f6;
+            z-index: 100;
+            padding-bottom: calc(0.8rem + env(safe-area-inset-bottom));
+        }
+
+        .tab-btn {
+            position: relative;
+            overflow: visible !important; /* KUNCI: Agar cahaya bisa keluar batas */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.4s ease;
+        }
+
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .active-tab-btn { background: white; border-bottom: 3px solid #15803d; color: #15803d !important; }
+       
+        /* EFEK AMBIENT (Cahaya di belakang) */
+        .active-tab-btn::before {
+            content: "";
+            position: absolute;
+            top: 40%; /* Posisi sedikit ke atas dekat ikon */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            
+            /* Ganti warna ini sesuai tema (contoh biru) */
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.4) 0%, rgba(37, 99, 235, 0) 70%);
+            
+            filter: blur(12px); /* Membuat pendaran halus */
+            z-index: -1; /* Berada di belakang ikon */
+            border-radius: 50%;
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        /* Indikator garis bawah yang juga bercahaya */
+        .active-tab-btn::after {
+            content: "";
+            position: absolute;
+            bottom: 2px;
+            width: 12px;
+            height: 3px;
+            background: #2563eb;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.8); /* Glow pada garis */
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        /* Pastikan ini tetap ada di bagian bawah <style> Anda */
+        body {
+            /* Gunakan nilai yang sedikit lebih besar dari tinggi navbar Anda */
+            padding-bottom: 100px; 
+        }
+
+        /* Jika Anda ingin lebih presisi untuk layar HP modern */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            body {
+                padding
+
+        .input-wrapper {
+    position: relative;
+    display: flex;
+    items-center: center;
+}
+.input-wrapper input {
+    width: 100%;
+    padding-right: 50px; /* Beri ruang agar angka tidak tertutup satuan */
+}
+.input-wrapper .unit {
+    position: absolute;
+    right: 12px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8; /* Warna abu-abu lembut */
+    pointer-events: none; /* Agar tetap bisa klik input meski terkena teks ini */
+}
+
     </style>
 </head>
 <body class="min-h-screen pb-12">
@@ -151,7 +243,7 @@
             
             <div class="mb-6">
                 <label class="text-[10px] font-black text-gray-400 uppercase ml-2">Pencarian Pasien Otomatis:</label>
-                <select id="selectPasienSOAP" onchange="autoFillSOAP()" class="w-full p-4 rounded-2xl bg-white/60 border-none shadow-md font-bold text-gray-700 mt-1">
+                <select id="selectPasienSOAP" class="w-full p-4 rounded-2xl bg-white/60 border-none shadow-md font-bold text-gray-700 mt-1">
                     <option value="">-- Cari Nama / No RM --</option>
                 </select>
             </div>
@@ -165,12 +257,27 @@
 
             <div class="space-y-4 bg-white/30 p-4 rounded-3xl mb-4 border border-white">
                 <p class="text-[10px] font-black text-red-600 uppercase tracking-widest">O (Objective)</p>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="ttvTD" placeholder="TD (mmHg)" class="p-3 rounded-xl bg-white/50 border-none text-xs">
-                    <input type="text" id="ttvHR" placeholder="HR (x/mnt)" class="p-3 rounded-xl bg-white/50 border-none text-xs">
-                    <input type="text" id="ttvRR" placeholder="RR (x/mnt)" class="p-3 rounded-xl bg-white/50 border-none text-xs">
-                    <input type="text" id="ttvSuhu" placeholder="Suhu (°C)" class="p-3 rounded-xl bg-white/50 border-none text-xs">
-                </div>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+    <div class="input-wrapper">
+        <input type="text" id="ttvTD" placeholder="120/80" class="p-3 rounded-xl bg-white/50 text-xs text-center font-bold">
+        <span class="unit">mmHg</span>
+    </div>
+    
+    <div class="input-wrapper">
+        <input type="number" id="ttvHR" placeholder="80" class="p-3 rounded-xl bg-white/50 text-xs text-center font-bold">
+        <span class="unit">x/mnt</span>
+    </div>
+    
+    <div class="input-wrapper">
+        <input type="number" id="ttvRR" placeholder="20" class="p-3 rounded-xl bg-white/50 text-xs text-center font-bold">
+        <span class="unit">x/mnt</span>
+    </div>
+    
+    <div class="input-wrapper">
+        <input type="number" step="0.1" id="ttvSuhu" placeholder="36.5" class="p-3 rounded-xl bg-white/50 text-xs text-center font-bold">
+        <span class="unit">°C</span>
+    </div>
+</div>
                 <div class="p-4 bg-white/50 rounded-2xl text-center">
                     <p class="text-[10px] font-black mb-3">KALKULATOR GCS (O)</p>
                     <div class="grid grid-cols-3 gap-2">
@@ -188,493 +295,527 @@
                 <textarea id="soapP" placeholder="Planning (P)" class="p-3 rounded-xl bg-white/50 border-none text-sm h-32"></textarea>
             </div>
 
-            <button onclick="kirimWhatsApp()" class="w-full bg-green-600 text-white font-black py-5 rounded-3xl shadow-2xl flex justify-center items-center gap-3 transition-all active:scale-95">
-                <span>📲</span> LAPORKAN KE DPJP (WA)
-            </button>
+            <button onclick="kirimWhatsApp()" class="w-full bg-green-600 text-white font-black py-5 rounded-3xl shadow-xl flex justify-center items-center gap-2 active:scale-95 transition-all mb-2">
+    <span>📲</span> LAPORKAN SOAP (WA)
+</button>
 
-            <div class="px-2">
-    <button onclick="toggleModalObat()" class="w-full py-2 px-4 rounded-xl border border-red-200 bg-red-50/30 text-red-700 text-[10px] font-black tracking-[0.2em] hover:bg-red-600 hover:text-white transition-all duration-300 flex justify-center items-center gap-2 mb-8 shadow-sm">
-        <span class="text-sm">⚡</span> EMERGENCY DRUG CALCULATOR
-    </button>
+<div class="relative flex py-5 items-center">
+    <div class="flex-grow border-t border-gray-300"></div>
+    <span class="flex-shrink mx-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Alat Medis</span>
+    <div class="flex-grow border-t border-gray-300"></div>
 </div>
+
+<button onclick="toggleModalObat()" class="w-full py-4 rounded-2xl border border-red-200 bg-red-50/50 text-red-700 text-[11px] font-black uppercase tracking-widest hover:bg-red-100 transition-all">
+    💊 Drug Calculator (Syringe Pump)
+</button>
 
         </section>
 
     </main>
 
     <script>
-        // MASUKKAN URL WEB APP ANDA DI SINI
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby2l4IXu5zo9pXj-Sy1dnPrNQXHASrpH3BEAUReJCFnR2fErN0-ktjCIIbAySzxREk6/exec";
-        let dataGlobal = [];
+    // --- KONFIGURASI GLOBAL ---
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby2l4IXu5zo9pXj-Sy1dnPrNQXHASrpH3BEAUReJCFnR2fErN0-ktjCIIbAySzxREk6/exec";
+    const SECRET_PIN = "1234";
+    let dataGlobal = [];
 
+    // --- 1. MANAJEMEN AKSES & LOGIN ---
 
+    function checkAccess() {
+        const user = document.getElementById('userName').value;
+        const pin = document.getElementById('pinInput').value;
 
-        async function updateAvailableBeds() {
-    const selectBed = document.getElementById('selectBedReg');
-    try {
-        const res = await fetch(WEB_APP_URL + "?action=getAvailableBeds");
-        const beds = await res.json();
-        
-        selectBed.innerHTML = '<option value="">-- Pilih Bed Tersedia --</option>';
-        
-        if (beds.length === 0) {
-            selectBed.innerHTML = '<option value="">KAMAR PENUH</option>';
+        if (pin === SECRET_PIN && user.trim().length >= 3) {
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('currentUser', user);
+            sessionStorage.setItem('role', 'admin'); // Role Admin/Perawat
+            loginSuccess(user);
         } else {
-            beds.forEach(bed => {
-                let opt = document.createElement('option');
-                opt.value = bed;
-                opt.text = "Bed " + bed;
-                selectBed.add(opt);
-            });
-        }
-    } catch (e) {
-        selectBed.innerHTML = '<option value="">Gagal memuat bed</option>';
-    }
-}
-
-        function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active-tab-btn'));
-    
-    document.getElementById(tabId).classList.add('active');
-    document.getElementById('btn-' + tabId).classList.add('active-tab-btn');
-    
-    // TAMBAHKAN INI: Jika buka tab registrasi, ambil data bed terbaru
-    if(tabId === 'reg') updateAvailableBeds(); 
-    
-    if(tabId === 'live' || tabId === 'care') fetchPasien();
-}
-
-        async function kirimData() {
-    const btn = document.getElementById('btnSimpan');
-    const form = document.getElementById('formReg');
-    const user = sessionStorage.getItem('currentUser') || "Unknown"; 
-    
-    // Validasi input wajib
-    if (!form.rm.value || !form.nama.value || !form.bed.value) {
-        alert("Mohon lengkapi No. RM, Nama, dan Bed!");
-        return;
-    }
-
-    const formData = new FormData(form);
-    const params = new URLSearchParams(formData);
-    
-    // Menambahkan identitas perawat agar tercatat di Log Database
-    params.append('user_admin', user); 
-    
-    btn.disabled = true; 
-    btn.innerText = "SEDANG MENGIRIM...";
-
-    try {
-        // Menggunakan mode 'no-cors' karena Apps Script tidak mendukung CORS penuh
-        await fetch(WEB_APP_URL, { 
-            method: "POST", 
-            mode: "no-cors", 
-            body: params 
-        });
-        
-        alert("Pasien Berhasil Terdaftar di Unit Stroke!");
-        form.reset();
-        document.getElementById('inputJaminanManual').classList.add('hidden');
-        showTab('live'); // Pindah ke Live Report
-    } catch (e) { 
-        alert("Terjadi kesalahan koneksi database."); 
-    } finally { 
-        btn.disabled = false; 
-        btn.innerText = "Simpan ke Database Unit Stroke"; 
-    }
-}
-
-        async function fetchPasien() {
-
-// Tambahkan baris ini di dalam loop data.forEach pada fungsi fetchPasien()
-// agar tamu tetap bisa klik kalkulator dari halaman utama
-if (sessionStorage.getItem('role') === 'guest') {
-    // Tampilkan tombol kalkulator melayang (Floating Button) khusus tamu
-    document.getElementById('floatingCalc').classList.remove('hidden');
-
-    const role = sessionStorage.getItem('role');
-    const floatBtn = document.getElementById('floatingCalc');
-    
-    if (role === 'guest') {
-        // Tampilkan tombol melayang jika user adalah tamu
-        if(floatBtn) floatBtn.classList.remove('hidden');
-    } else {
-        // Sembunyikan jika perawat (karena perawat sudah punya tombol di menu)
-        if(floatBtn) floatBtn.classList.add('hidden');
-    }
-}
-
-
-    
-    const container = document.getElementById('containerPasien');
-    const loader = document.getElementById('loadingPasien');
-    const dropdown = document.getElementById('selectPasienSOAP');
-    const role = sessionStorage.getItem('role'); 
-
-    try {
-        const res = await fetch(WEB_APP_URL + "?action=getPasienAktif");
-        let data = await res.json();
-
-        // --- PROSES SORTING (URUTAN BED) ---
-        // Mengurutkan data berdasarkan Kolom Bed (indeks ke-2)
-        data.sort((a, b) => {
-            return a[2].toString().localeCompare(b[2].toString(), undefined, {
-                numeric: true, 
-                sensitivity: 'base'
-            });
-        });
-
-        dataGlobal = data;
-        loader.style.display = 'none';
-        container.innerHTML = "";
-        dropdown.innerHTML = '<option value="">-- Cari Nama / No RM --</option>';
-
-        data.forEach(p => {
-            const badgeColor = p[7] === "Bedah Saraf" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700";
-
-            // --- LOGIKA TOMBOL PULANG (Hanya untuk Perawat) ---
-            // Jika role adalah 'guest', tombol tidak akan dibuat (kosong)
-            const tombolPulang = (role !== 'guest') 
-                ? `<button onclick="aksiPulangkan('${p[1]}')" class="ml-4 bg-gray-50 text-gray-400 p-3 rounded-2xl text-[9px] font-black border border-gray-100 hover:bg-red-600 hover:text-white transition-all uppercase">Pulang</button>` 
-                : '';
-
-            container.innerHTML += `
-                <div class="bg-white/80 p-5 rounded-[1.5rem] shadow-sm flex justify-between items-center border-l-8 ${p[7] === 'Bedah Saraf' ? 'border-red-500' : 'border-blue-500'} animate-fade-in">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-1">
-                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">BED ${p[2]}</p>
-                            <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${badgeColor}">${p[7]}</span>
-                        </div>
-                        <p class="font-extrabold text-gray-800 text-lg leading-tight">${p[3]}</p>
-                        <p class="text-[10px] text-gray-500 font-bold tracking-tighter uppercase mt-1">
-                            RM: ${p[1]} | DPJP: ${p[6]}
-                        </p>
-                    </div>
-                    ${tombolPulang}
-                </div>`;
-            
-            let opt = document.createElement('option');
-            opt.value = JSON.stringify(p);
-            opt.text = `${p[3]} (RM: ${p[1]}) - Bed ${p[2]}`;
-            dropdown.add(opt);
-        });
-
-        let bor = (data.length / 19 * 100).toFixed(1);
-        document.getElementById('borDisplay').innerText = `BOR: ${bor}%`;
-
-    } catch (e) { 
-        loader.innerText = "Gagal memuat data..."; 
-    }
-}
-
-        async function aksiPulangkan(rm) {
-            if(!confirm("Proses pulang untuk RM " + rm + "?")) return;
-            try {
-                await fetch(`${WEB_APP_URL}?action=pulangkan&rm=${rm}`, { mode: 'no-cors' });
-                alert("Data diperbarui.");
-                fetchPasien();
-            } catch (e) { alert("Gagal koneksi."); }
-        }
-
-        function hitungGCS() {
-            const e = parseInt(document.getElementById('gcsE').value) || 0;
-            const v = parseInt(document.getElementById('gcsV').value) || 0;
-            const m = parseInt(document.getElementById('gcsM').value) || 0;
-            document.getElementById('totalGCS').innerText = e + v + m;
-        }
-
-        function kirimWhatsApp() {
-            const sel = document.getElementById('selectPasienSOAP').value;
-            if(!sel) return alert("Pilih pasien terlebih dahulu!");
-            
-            const p = JSON.parse(sel);
-            const rps = document.getElementById('soapRPS').value;
-            const rpo = document.getElementById('soapRPO').value;
-            const rpd = document.getElementById('soapRPD').value;
-            const td = document.getElementById('ttvTD').value;
-            const hr = document.getElementById('ttvHR').value;
-            const rr = document.getElementById('ttvRR').value;
-            const su = document.getElementById('ttvSuhu').value;
-            const gcs = document.getElementById('totalGCS').innerText;
-            const neuro = document.getElementById('statusNeurologis').value;
-            const a = document.getElementById('soapA').value;
-            const pl = document.getElementById('soapP').value;
-
-            const text = `*LAPORAN PERKEMBANGAN PASIEN UNIT STROKE*%0A` +
-                         `----------------------------------------------------%0A` +
-                         `*IDENTITAS PASIEN*%0A` +
-                         `Nama: ${p[3]} (RM: ${p[1]})%0A` +
-                         `Bed: ${p[2]} | DPJP: ${p[6]}%0A%0A` +
-                         `*S (Subjective)*%0A` +
-                         `- RPS: ${rps}%0A` +
-                         `- RPO: ${rpo}%0A` +
-                         `- RPD: ${rpd}%0A%0A` +
-                         `*O (Objective)*%0A` +
-                         `- TTV: TD ${td}, HR ${hr}, RR ${rr}, Suhu ${su}%0A` +
-                         `- GCS: ${gcs} (E${document.getElementById('gcsE').value}V${document.getElementById('gcsV').value}M${document.getElementById('gcsM').value})%0A` +
-                         `- Neuro: ${neuro}%0A%0A` +
-                         `*A (Assesment)*%0A` +
-                         `${a}%0A%0A` +
-                         `*P (Planning)*%0A` +
-                         `${pl}%0A` +
-                         `----------------------------------------------------%0A` +
-                         `_Sent via STROKE-LINK RSPAD Gatot Soebroto_`;
-
-            window.open(`https://wa.me/?text=${text}`, '_blank');
-        }
-
-        // Jalankan default tab
-        showTab('reg');
-
-        function toggleModalObat() {
-    const modal = document.getElementById('modalObat');
-    modal.classList.toggle('hidden');
-    // Jika ada data BB di form registrasi/SOAP, tarik otomatis ke kalkulator
-    const bbAktif = document.getElementsByName('bb')[0]?.value;
-    if(bbAktif) document.getElementById('calcBB').value = bbAktif;
-}
-
-function switchObat() {
-    const obat = document.getElementById('jenisObat').value;
-    const unit = document.getElementById('unitDosis');
-    const sediaan = document.getElementById('sediaanMg');
-    const cc = document.getElementById('pengenceranCc');
-
-    if (obat === "nicardipine") {
-        unit.innerText = "mcg/kg/mnt";
-        sediaan.value = 10;
-        cc.value = 50;
-    } else if (obat === "norepinephrine") {
-        unit.innerText = "mcg/kg/mnt";
-        sediaan.value = 4;
-        cc.value = 50;
-    } else if (obat === "manitol") {
-        unit.innerText = "gram/kgBB";
-        sediaan.value = 200; // 20% artinya 200mg/ml
-        cc.value = 500;
-        alert("Untuk Manitol, dosis biasanya 0.25 - 1 gram/kgBB bolus.");
-    }
-}
-
-function hitungDosisEksak() {
-    const jenis = document.getElementById('jenisObat').value;
-    const bb = parseFloat(document.getElementById('calcBB').value);
-    const dosis = parseFloat(document.getElementById('calcDosis').value);
-    const mg = parseFloat(document.getElementById('sediaanMg').value);
-    const cc = parseFloat(document.getElementById('pengenceranCc').value);
-
-    if (!bb || !dosis || !mg || !cc) return alert("Mohon lengkapi semua data!");
-
-    let hasil = 0;
-
-    if (jenis === "nicardipine" || jenis === "norepinephrine") {
-        // Rumus: (Dosis * BB * 60) / ( (Mg * 1000) / Cc )
-        const konsentrasimcg = (mg * 1000) / cc;
-        hasil = (dosis * bb * 60) / konsentrasimcg;
-    } else if (jenis === "manitol") {
-        // Rumus Bolus Manitol 20% (sediaan 0.2 gr/ml)
-        // Hasil dalam CC Bolus
-        hasil = (dosis * bb) / 0.2;
-    }
-
-    document.getElementById('hasilHitung').innerHTML = `${hasil.toFixed(2)} <span class="text-sm">${jenis === 'manitol' ? 'cc (Bolus)' : 'cc/jam'}</span>`;
-}
-
-
-const DRUG_CONFIG = {
-    nicardipine: { mg: 10, cc: 50, info: "Nicardipine: Titrasi dimulai 5 mcg/mnt, naikkan 2.5 mcg/mnt tiap 5-15 mnt sampai target TD tercapai." },
-    norepinephrine: { mg: 4, cc: 50, info: "Norepinephrine: Vasopressor kuat. Gunakan Vena Sentral jika memungkinkan untuk cegah nekrosis." },
-    dobutamine: { mg: 250, cc: 50, info: "Dobutamine: Inotropik. Dosis lazim 2.5-20 mcg/kg/mnt. Monitor aritmia." },
-    dopamine: { mg: 200, cc: 50, info: "Dopamine: Dosis inotropik (5-10 mcg/kg/mnt), dosis vasopressor (>10 mcg/kg/mnt)." },
-    manitol: { mg: 100, cc: 500, info: "Manitol 20%: Sediaan 500cc mengandung 100gr Manitol (0.2gr/ml). Diberikan bolus cepat." }
-};
-
-function updateDrugSetting() {
-    const val = document.getElementById('jenisObat').value;
-    const config = DRUG_CONFIG[val];
-    document.getElementById('sediaanMg').value = config.mg;
-    document.getElementById('pengenceranCc').value = config.cc;
-    document.getElementById('boxHasil').classList.add('hidden');
-    
-    // Auto-switch metode untuk Manitol
-    if(val === 'manitol') {
-        document.getElementById('metodeHitung').value = 'mcg_kg_min';
-        document.getElementById('metodeHitung').disabled = true;
-    } else {
-        document.getElementById('metodeHitung').disabled = false;
-    }
-}
-
-function kalkulasiEksak() {
-    const obat = document.getElementById('jenisObat').value;
-    const metode = document.getElementById('metodeHitung').value;
-    const bb = parseFloat(document.getElementById('calcBB').value) || 0;
-    const dosis = parseFloat(document.getElementById('calcDosis').value) || 0;
-    const mg = parseFloat(document.getElementById('sediaanMg').value) || 0;
-    const cc = parseFloat(document.getElementById('pengenceranCc').value) || 0;
-
-    if (!dosis || !mg || !cc) return alert("Lengkapi Dosis dan Sediaan!");
-
-    let kecepatan = 0;
-    let rumusteks = "";
-    const konsentrasi = (mg * 1000) / cc; // mcg/cc
-
-    if (obat === 'manitol') {
-        // Manitol dihitung dalam Gram
-        // Rumus: (Dosis Gram * BB) / 0.2
-        kecepatan = (dosis * bb) / 0.2;
-        rumusteks = `<b>${DRUG_CONFIG[obat].info}</b><br><br>Rumus Bolus: (Dosis ${dosis}gr x BB ${bb}kg) / 0.2 (Konsentrasi Manitol 20%) = <b>${kecepatan.toFixed(1)} cc Bolus.</b>`;
-    } else {
-        if (metode === "mcg_kg_min") {
-            if (!bb) return alert("BB wajib diisi!");
-            kecepatan = (dosis * bb * 60) / konsentrasi;
-            rumusteks = `<b>${DRUG_CONFIG[obat].info}</b><br><br>1. Konsentrasi: (${mg}mg x 1000) / ${cc}cc = ${konsentrasi} mcg/cc.<br>2. Rumus: (Dosis ${dosis} x BB ${bb} x 60mnt) / ${konsentrasi} mcg/cc = <b>${kecepatan.toFixed(2)} cc/jam.</b>`;
-        } else {
-            kecepatan = (dosis * 60) / konsentrasi;
-            rumusteks = `<b>${DRUG_CONFIG[obat].info}</b><br><br>1. Konsentrasi: (${mg}mg x 1000) / ${cc}cc = ${konsentrasi} mcg/cc.<br>2. Rumus Flat: (Dosis ${dosis}mcg/mnt x 60mnt) / ${konsentrasi} mcg/cc = <b>${kecepatan.toFixed(2)} cc/jam.</b>`;
+            alert("Akses Ditolak! Pastikan Nama diisi (min 3 huruf) dan PIN benar.");
         }
     }
 
-    document.getElementById('hasilHitung').innerHTML = `${kecepatan.toFixed(2)} <span class="text-sm">${obat === 'manitol' ? 'cc (BOLUS)' : 'cc/jam'}</span>`;
-    document.getElementById('penjelasanRumus').innerHTML = rumusteks;
-    document.getElementById('boxHasil').classList.remove('hidden');
-}
-
-    function toggleManualJaminan() {
-    const select = document.getElementById('selectJaminan');
-    const manualDiv = document.getElementById('inputJaminanManual');
-    const finalInput = document.getElementById('finalJaminan');
-    const customInput = document.getElementById('jaminanCustom');
-
-    if (select.value === "MANUAL") {
-        manualDiv.classList.remove('hidden');
-        finalInput.value = customInput.value;
-    } else {
-        manualDiv.classList.add('hidden');
-        finalInput.value = select.value;
-    }
-}
-
-// Sinkronisasi ketikan manual ke database
-document.getElementById('jaminanCustom')?.addEventListener('input', function() {
-    document.getElementById('finalJaminan').value = this.value;
-});
-
-// Pastikan saat form di-reset, input manual juga tersembunyi
-function resetFormCustom() {
-    document.getElementById('formReg').reset();
-    document.getElementById('inputJaminanManual').classList.add('hidden');
-}
-
-const SECRET_PIN = "1234"; // Sesuaikan PIN unit Anda
-
-// Fungsi untuk Perawat (Wajib hapus role guest agar menu muncul lagi)
-function checkAccess() {
-    const user = document.getElementById('userName').value;
-    const pin = document.getElementById('pinInput').value;
-    
-    if (user.length > 2 && pin === "1234") {
+    function aksesTamu() {
         sessionStorage.setItem('isLoggedIn', 'true');
-        sessionStorage.setItem('currentUser', user);
-        sessionStorage.removeItem('role'); // HAPUS role guest jika ada
-        loginSuccess(user);
-    } else {
-        alert("PIN Salah!");
+        sessionStorage.setItem('currentUser', 'Pengunjung');
+        sessionStorage.setItem('role', 'guest'); 
+        loginSuccess('Pengunjung');
     }
-}
 
-// Fungsi untuk Tamu
-function aksesTamu() {
-    sessionStorage.setItem('isLoggedIn', 'true');
-    sessionStorage.setItem('currentUser', 'Pengunjung');
-    sessionStorage.setItem('role', 'guest'); 
-    loginSuccess('Pengunjung');
-}
-
-function loginSuccess(user) {
-    document.getElementById('loginOverlay').classList.add('hidden');
-    document.getElementById('userBadge').classList.remove('hidden');
-    document.getElementById('displayUserName').innerText = user;
-
-    const role = sessionStorage.getItem('role');
-    const btnReg = document.getElementById('btn-reg');  // ID Tombol Navigasi Registrasi
-    const btnCare = document.getElementById('btn-care'); // ID Tombol Navigasi Stroke Care
-
-    if (role === 'guest') {
-        // SEMBUNYIKAN MENU UNTUK TAMU
-        if(btnReg) btnReg.style.display = 'none';
-        if(btnCare) btnCare.style.display = 'none'; // Tambahkan baris ini
+    function loginSuccess(u) {
+        document.getElementById('loginOverlay').classList.add('hidden');
+        document.getElementById('userBadge').classList.remove('hidden');
+        document.getElementById('displayUserName').innerText = u;
         
-        showTab('live'); // Paksa tamu ke Live Report
+        // Jalankan proteksi menu berdasarkan role
+        aturTampilanRole();
 
-        // Tambahkan CSS untuk proteksi tambahan
-        if (!document.getElementById('guestStyle')) {
-            const style = document.createElement('style');
-            style.id = "guestStyle";
-            style.innerHTML = `
-                .btn-pulang, #reg, #care { display: none !important; } 
-                /* #care disembunyikan agar tidak bisa diakses lewat script manual */
-            `;
-            document.head.appendChild(style);
-        }
-    } else {
-        // TAMPILKAN SEMUA UNTUK PERAWAT
-        if(btnReg) btnReg.style.display = 'block';
-        if(btnCare) btnCare.style.display = 'block';
-        
-        const gStyle = document.getElementById('guestStyle');
-        if(gStyle) gStyle.remove();
-    }
-}
-
-// Update fungsi pulangkan untuk menyertakan user
-async function aksiPulangkan(rm) {
-    const user = sessionStorage.getItem('currentUser');
-    if(!confirm("Proses pulang untuk RM " + rm + "?")) return;
-    try {
-        // Kirim RM dan Nama User ke Apps Script
-        await fetch(`${WEB_APP_URL}?action=pulangkan&rm=${rm}&user=${encodeURIComponent(user)}`, { mode: 'no-cors' });
-        alert("Berhasil dipulangkan oleh: " + user);
+        showTab('live'); // Default ke Live Report
         fetchPasien();
-    } catch (e) { alert("Gagal koneksi."); }
-}
-
-// Cek session saat refresh
-window.addEventListener('load', () => {
-    const logged = sessionStorage.getItem('isLoggedIn');
-    const user = sessionStorage.getItem('currentUser');
-    if(logged === 'true') loginSuccess(user);
-});
-
-function logout() {
-    sessionStorage.clear();
-    location.reload(); // Refresh halaman untuk kembali ke layar login
-}
-
-// Jalankan ini setiap kali halaman di-refresh/dibuka
-window.addEventListener('load', () => {
-    const logged = sessionStorage.getItem('isLoggedIn');
-    const user = sessionStorage.getItem('currentUser');
-    
-    if (logged === 'true' && user) {
-        // Jika sudah login, langsung buka aplikasi
-        loginSuccess(user);
-        fetchPasien(); // Ambil data pasien terbaru
-    } else {
-        // Jika belum login, pastikan overlay login muncul
-        document.getElementById('loginOverlay').classList.remove('hidden');
-        document.getElementById('userBadge').classList.add('hidden');
     }
-});
+    function logout() {
+        sessionStorage.clear();
+        location.reload();
+    }
+
+    // --- 2. NAVIGASI & TAB ---
+
+    function showTab(tabId) {
+        // 1. Sembunyikan semua konten
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+            tab.style.display = 'none';
+        });
+        
+        // 2. Reset semua tombol navigasi
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active-tab-btn');
+            btn.style.opacity = "0.4";
+        });
+
+        // 3. Aktifkan tab yang dipilih
+        const targetTab = document.getElementById(tabId);
+        const targetBtn = document.getElementById('btn-' + tabId);
+
+        if (targetTab) {
+            targetTab.classList.add('active');
+            targetTab.style.display = 'block';
+            window.scrollTo(0,0);
+        }
+        
+        if (targetBtn) {
+            targetBtn.classList.add('active-tab-btn');
+            targetBtn.style.opacity = "1";
+        }
+
+        // 4. Load data jika masuk ke menu Live Report atau Stroke Care
+        if (tabId === 'live' || tabId === 'care') {
+            fetchPasien();
+        }
+        if (tabId === 'reg') {
+            updateAvailableBeds();
+        }
+    }
+
+    // --- 3. MANAJEMEN DATA PASIEN ---
+
+    async function updateAvailableBeds() {
+        const selectBed = document.getElementById('selectBedReg');
+        try {
+            const res = await fetch(WEB_APP_URL + "?action=getAvailableBeds");
+            const beds = await res.json();
+            selectBed.innerHTML = '<option value="">-- Pilih Bed Tersedia --</option>';
+            
+            if (beds.length === 0) {
+                selectBed.innerHTML = '<option value="">KAMAR PENUH</option>';
+            } else {
+                beds.forEach(bed => {
+                    let opt = document.createElement('option');
+                    opt.value = bed;
+                    opt.text = "Bed " + bed;
+                    selectBed.add(opt);
+                });
+            }
+        } catch (e) {
+            selectBed.innerHTML = '<option value="">Gagal memuat bed</option>';
+        }
+    }
+
+    async function fetchPasien() {
+        const container = document.getElementById('containerPasien');
+        const loader = document.getElementById('loadingPasien');
+        const dropdown = document.getElementById('selectPasienSOAP');
+        const role = sessionStorage.getItem('role');
+
+        try {
+            if(loader) loader.style.display = 'block';
+            const res = await fetch(WEB_APP_URL + "?action=getPasienAktif");
+            let data = await res.json();
+
+            // Sorting berdasarkan Bed
+            data.sort((a, b) => a[2].toString().localeCompare(b[2].toString(), undefined, {numeric: true}));
+
+            dataGlobal = data;
+            if(loader) loader.style.display = 'none';
+            container.innerHTML = "";
+            
+            if(dropdown) {
+                dropdown.innerHTML = '<option value="">-- Cari Nama / No RM --</option>';
+            }
+
+            data.forEach(p => {
+                const badgeColor = p[7] === "Bedah Saraf" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700";
+                
+                // 1. Logika Klik Detail: Hanya aktif jika BUKAN guest
+                // Jika guest, kita buat pointer-events-none atau hilangkan fungsi kliknya
+                const klikAksi = (role !== 'guest') 
+                    ? `onclick='bukaDetailPasien(${JSON.stringify(p)})'` 
+                    : `onclick="alert('Mode Guest: Tidak diizinkan melihat detail medis')"`;
+
+                const cursorClass = (role !== 'guest') ? 'cursor-pointer' : 'cursor-default';
+
+                // 2. Tombol Pulang: Tetap hanya untuk perawat (bukan guest)
+                const tombolPulang = (role !== 'guest') 
+                    ? `<button onclick="event.stopPropagation(); aksiPulangkan('${p[1]}')" class="ml-4 bg-gray-50 text-gray-400 p-3 rounded-2xl text-[9px] font-black border border-gray-100 hover:bg-red-600 hover:text-white transition-all uppercase">Pulang</button>` 
+                    : '';
+
+                // Render Kartu Pasien
+                container.innerHTML += `
+                    <div ${klikAksi} class="bg-white/80 p-5 rounded-[1.5rem] shadow-sm flex justify-between items-center border-l-8 ${p[7] === 'Bedah Saraf' ? 'border-red-500' : 'border-blue-500'} animate-fade-in mb-3 ${cursorClass}">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">BED ${p[2]}</p>
+                                <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${badgeColor}">${p[7]}</span>
+                            </div>
+                            <p class="font-extrabold text-gray-800 text-lg leading-tight">${p[3]}</p>
+                            <p class="text-[10px] text-gray-500 font-bold tracking-tighter uppercase mt-1">
+                                RM: ${p[1]} | DPJP: ${p[6] || '-'}
+                            </p>
+                        </div>
+                        ${tombolPulang}
+                    </div>`;
+                
+                // Dropdown SOAP tetap diisi (biasanya menu SOAP sendiri sudah disembunyikan untuk Guest di level UI)
+                if(dropdown) {
+                    let opt = document.createElement('option');
+                    opt.value = JSON.stringify(p);
+                    opt.text = `${p[3]} (RM: ${p[1]}) - Bed ${p[2]}`;
+                    dropdown.add(opt);
+                }
+            });
+
+            let bor = (data.length / 19 * 100).toFixed(1);
+            const elBor = document.getElementById('borDisplay');
+            if(elBor) elBor.innerText = `BOR: ${bor}%`;
+
+        } catch (e) { 
+            console.error(e);
+            if(loader) loader.innerText = "Gagal memuat data..."; 
+        }
+    }
+
+    // --- 4. OPERASIONAL (REGISTRASI, WA, PULANG) ---
+
+    async function kirimData() {
+        const btn = document.getElementById('btnSimpan');
+        const form = document.getElementById('formReg');
+        const user = sessionStorage.getItem('currentUser') || "Unknown"; 
+
+        if (!form.rm.value || !form.nama.value || !form.bed.value) {
+            alert("Mohon lengkapi No. RM, Nama, dan Bed!");
+            return;
+        }
+
+        const params = new URLSearchParams(new FormData(form));
+        params.append('user_admin', user); 
+        
+        btn.disabled = true; btn.innerText = "SEDANG MENGIRIM...";
+
+        try {
+            await fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: params });
+            alert("Pasien Berhasil Terdaftar!");
+            form.reset();
+            document.getElementById('inputJaminanManual').classList.add('hidden');
+            showTab('live');
+        } catch (e) { 
+            alert("Terjadi kesalahan koneksi."); 
+        } finally { 
+            btn.disabled = false; btn.innerText = "Simpan ke Database Unit Stroke"; 
+        }
+    }
+
+    async function aksiPulangkan(rm) {
+        const user = sessionStorage.getItem('currentUser');
+        if(!confirm("Proses pulang untuk RM " + rm + "?")) return;
+        try {
+            await fetch(`${WEB_APP_URL}?action=pulangkan&rm=${rm}&user=${encodeURIComponent(user)}`, { mode: 'no-cors' });
+            alert("Berhasil dipulangkan.");
+            fetchPasien();
+        } catch (e) { alert("Gagal koneksi."); }
+    }
+
+    function kirimWhatsApp() {
+        const selVal = document.getElementById('selectPasienSOAP').value;
+        if (!selVal) return alert("Pilih pasien terlebih dahulu!");
+
+        const p = JSON.parse(selVal);
+        const data = {
+            rps: document.getElementById('soapRPS')?.value || "-",
+            rpo: document.getElementById('soapRPO')?.value || "-",
+            rpd: document.getElementById('soapRPD')?.value || "-",
+            neuro: document.getElementById('statusNeurologis')?.value || "-",
+            a: document.getElementById('soapA')?.value || "-",
+            pl: document.getElementById('soapP')?.value || "-",
+            td: document.getElementById('ttvTD')?.value || "-",
+            hr: document.getElementById('ttvHR')?.value || "-",
+            rr: document.getElementById('ttvRR')?.value || "-",
+            su: document.getElementById('ttvSuhu')?.value || "-",
+            gcs: document.getElementById('totalGCS')?.innerText || "0",
+            detailGCS: `E${document.getElementById('gcsE').value}V${document.getElementById('gcsV').value}M${document.getElementById('gcsM').value}`
+        };
+
+        const pesanRaw = `*LAPORAN PERKEMBANGAN PASIEN UNIT STROKE*
+----------------------------------------------------
+*IDENTITAS PASIEN*
+Nama: ${p[3]} (RM: ${p[1]})
+Bed: ${p[2]} | DPJP: ${p[6] || '-'}
+
+*S (Subjective)*
+RPS: ${data.rps}
+RPO: ${data.rpo}
+RPD: ${data.rpd}
+
+*O (Objective)*
+TTV: TD ${data.td} mmHg, HR ${data.hr} x/i, RR ${data.rr} x/i, Suhu ${data.su} °C
+GCS: ${data.gcs} (${data.detailGCS})
+Neuro: ${data.neuro}
+
+*A (Assessment)*
+${data.a}
+
+*P (Planning)*
+${data.pl}
+----------------------------------------------------
+_Sent via STROKE-LINK RSPAD Gatot Soebroto_`;
+
+        window.open(`https://wa.me/?text=${encodeURIComponent(pesanRaw)}`, '_blank');
+    }
+
+    // --- 5. KALKULATOR & MODAL ---
+
+    // Fungsi untuk Membuka/Tutup Modal Kalkulator
+    function toggleModalObat() {
+        const modal = document.getElementById('modalObat');
+        modal.classList.toggle('hidden');
+        // Jika ada data BB di form registrasi/SOAP, tarik otomatis ke kalkulator
+        const bbAktif = document.getElementsByName('bb')[0]?.value;
+        if(bbAktif) document.getElementById('calcBB').value = bbAktif;
+    }
+
+    function switchObat() {
+        const obat = document.getElementById('jenisObat').value;
+        const unit = document.getElementById('unitDosis');
+        const sediaan = document.getElementById('sediaanMg');
+        const cc = document.getElementById('pengenceranCc');
+
+        if (obat === "nicardipine") {
+            unit.innerText = "mcg/kg/mnt";
+            sediaan.value = 10;
+            cc.value = 50;
+        } else if (obat === "norepinephrine") {
+            unit.innerText = "mcg/kg/mnt";
+            sediaan.value = 4;
+            cc.value = 50;
+        } else if (obat === "manitol") {
+            unit.innerText = "gram/kgBB";
+            sediaan.value = 200; // 20% artinya 200mg/ml
+            cc.value = 500;
+            alert("Untuk Manitol, dosis biasanya 0.25 - 1 gram/kgBB bolus.");
+        }
+    }
+
+    function hitungDosisEksak() {
+        const jenis = document.getElementById('jenisObat').value;
+        const bb = parseFloat(document.getElementById('calcBB').value);
+        const dosis = parseFloat(document.getElementById('calcDosis').value);
+        const mg = parseFloat(document.getElementById('sediaanMg').value);
+        const cc = parseFloat(document.getElementById('pengenceranCc').value);
+
+        if (!bb || !dosis || !mg || !cc) return alert("Mohon lengkapi semua data!");
+
+        let hasil = 0;
+
+        if (jenis === "nicardipine" || jenis === "norepinephrine") {
+            // Rumus: (Dosis * BB * 60) / ( (Mg * 1000) / Cc )
+            const konsentrasimcg = (mg * 1000) / cc;
+            hasil = (dosis * bb * 60) / konsentrasimcg;
+        } else if (jenis === "manitol") {
+            // Rumus Bolus Manitol 20% (sediaan 0.2 gr/ml)
+            // Hasil dalam CC Bolus
+            hasil = (dosis * bb) / 0.2;
+        }
+
+        document.getElementById('hasilHitung').innerHTML = `${hasil.toFixed(2)} <span class="text-sm">${jenis === 'manitol' ? 'cc (Bolus)' : 'cc/jam'}</span>`;
+    }
 
 
-// Tambahkan di bagian paling bawah sebelum tag tutup
-window.addEventListener('load', () => { 
+    const DRUG_CONFIG = {
+        nicardipine: { mg: 10, cc: 50, info: "Nicardipine: Titrasi dimulai 5 mcg/mnt, naikkan 2.5 mcg/mnt tiap 5-15 mnt sampai target TD tercapai." },
+        norepinephrine: { mg: 4, cc: 50, info: "Norepinephrine: Vasopressor kuat. Gunakan Vena Sentral jika memungkinkan untuk cegah nekrosis." },
+        dobutamine: { mg: 250, cc: 50, info: "Dobutamine: Inotropik. Dosis lazim 2.5-20 mcg/kg/mnt. Monitor aritmia." },
+        dopamine: { mg: 200, cc: 50, info: "Dopamine: Dosis inotropik (5-10 mcg/kg/mnt), dosis vasopressor (>10 mcg/kg/mnt)." },
+        manitol: { mg: 100, cc: 500, info: "Manitol 20%: Sediaan 500cc mengandung 100gr Manitol (0.2gr/ml). Diberikan bolus cepat." }
+    };
+
+    function updateDrugSetting() {
+        const val = document.getElementById('jenisObat').value;
+        const config = DRUG_CONFIG[val];
+        document.getElementById('sediaanMg').value = config.mg;
+        document.getElementById('pengenceranCc').value = config.cc;
+        document.getElementById('boxHasil').classList.add('hidden');
+        
+        // Auto-switch metode untuk Manitol
+        if(val === 'manitol') {
+            document.getElementById('metodeHitung').value = 'mcg_kg_min';
+            document.getElementById('metodeHitung').disabled = true;
+        } else {
+            document.getElementById('metodeHitung').disabled = false;
+        }
+    }
+
+    function kalkulasiEksak() {
+        const obat = document.getElementById('jenisObat').value;
+        const metode = document.getElementById('metodeHitung').value;
+        const bb = parseFloat(document.getElementById('calcBB').value) || 0;
+        const dosis = parseFloat(document.getElementById('calcDosis').value) || 0;
+        const mg = parseFloat(document.getElementById('sediaanMg').value) || 0;
+        const cc = parseFloat(document.getElementById('pengenceranCc').value) || 0;
+
+        if (!dosis || !mg || !cc) return alert("Lengkapi Dosis dan Sediaan!");
+
+        let kecepatan = 0;
+        let rumusteks = "";
+        const konsentrasi = (mg * 1000) / cc; // mcg/cc
+
+        if (obat === 'manitol') {
+            // Manitol dihitung dalam Gram
+            // Rumus: (Dosis Gram * BB) / 0.2
+            kecepatan = (dosis * bb) / 0.2;
+            rumusteks = `<b>${DRUG_CONFIG[obat].info}</b><br><br>Rumus Bolus: (Dosis ${dosis}gr x BB ${bb}kg) / 0.2 (Konsentrasi Manitol 20%) = <b>${kecepatan.toFixed(1)} cc Bolus.</b>`;
+        } else {
+            if (metode === "mcg_kg_min") {
+                if (!bb) return alert("BB wajib diisi!");
+                kecepatan = (dosis * bb * 60) / konsentrasi;
+                rumusteks = `<b>${DRUG_CONFIG[obat].info}</b><br><br>1. Konsentrasi: (${mg}mg x 1000) / ${cc}cc = ${konsentrasi} mcg/cc.<br>2. Rumus: (Dosis ${dosis} x BB ${bb} x 60mnt) / ${konsentrasi} mcg/cc = <b>${kecepatan.toFixed(2)} cc/jam.</b>`;
+            } else {
+                kecepatan = (dosis * 60) / konsentrasi;
+                rumusteks = `<b>${DRUG_CONFIG[obat].info}</b><br><br>1. Konsentrasi: (${mg}mg x 1000) / ${cc}cc = ${konsentrasi} mcg/cc.<br>2. Rumus Flat: (Dosis ${dosis}mcg/mnt x 60mnt) / ${konsentrasi} mcg/cc = <b>${kecepatan.toFixed(2)} cc/jam.</b>`;
+            }
+        }
+
+        document.getElementById('hasilHitung').innerHTML = `${kecepatan.toFixed(2)} <span class="text-sm">${obat === 'manitol' ? 'cc (BOLUS)' : 'cc/jam'}</span>`;
+        document.getElementById('penjelasanRumus').innerHTML = rumusteks;
+        document.getElementById('boxHasil').classList.remove('hidden');
+    }
+
+    function bukaDetailPasien(p) {
+        document.getElementById('detNama').innerText = p[3];
+        document.getElementById('detRM').innerText = "RM: " + p[1];
+        document.getElementById('detBed').innerText = "Bed " + p[2];
+        document.getElementById('detDiagnosa').innerText = p[4] || "-";
+        document.getElementById('detBB').innerText = (p[5] || "-") + " kg";
+        document.getElementById('detDPJP').innerText = p[6] || "-";
+        document.getElementById('detSpesialis').innerText = p[7] || "-";
+        document.getElementById('modalDetailPasien').classList.remove('hidden');
+    }
+
+    function tutupDetailPasien() {
+        document.getElementById('modalDetailPasien').classList.add('hidden');
+    }
+
+    // --- 6. INITIALIZATION ---
+
+    window.addEventListener('load', () => { 
+        const logged = sessionStorage.getItem('isLoggedIn');
+        const user = sessionStorage.getItem('currentUser');
+        
+        if (logged === 'true' && user) {
+            loginSuccess(user);
+        } else {
+            document.getElementById('loginOverlay').classList.remove('hidden');
+        }
         updateAvailableBeds(); 
     });
 
-    </script>
+
+    function aturTampilanRole() {
+        const role = sessionStorage.getItem('role');
+        
+        // Ambil elemen navigasi (tombol tab)
+        const btnReg = document.getElementById('btn-reg');
+        const btnCare = document.getElementById('btn-care');
+        
+        // Ambil elemen konten (isi tab)
+        const contentReg = document.getElementById('reg');
+        const contentCare = document.getElementById('care');
+
+        if (role === 'guest') {
+            // 1. Sembunyikan Tombol Navigasi
+            if (btnReg) btnReg.style.display = 'none';
+            if (btnCare) btnCare.style.display = 'none';
+            
+            // 2. Sembunyikan Konten (Proteksi tambahan jika user mencoba bypass lewat konsol)
+            if (contentReg) contentReg.innerHTML = "<div class='p-10 text-center font-bold text-gray-400'>Akses Dibatasi: Menu ini hanya untuk Petugas.</div>";
+            if (contentCare) contentCare.innerHTML = "<div class='p-10 text-center font-bold text-gray-400'>Akses Dibatasi: Menu ini hanya untuk Petugas.</div>";
+            
+            // 3. Tampilkan Floating Calculator (opsional, khusus tamu)
+            const floatBtn = document.getElementById('floatingCalc');
+            if (floatBtn) floatBtn.classList.remove('hidden');
+        } else {
+            // Jika Petugas, pastikan semua menu muncul kembali
+            if (btnReg) btnReg.style.display = 'flex';
+            if (btnCare) btnCare.style.display = 'flex';
+        }
+    }
+
+    function renderPatientList(data) {
+        const container = document.getElementById('containerPasien');
+        container.innerHTML = '';
+        
+        // Ambil role saat ini
+        const currentUser = JSON.parse(localStorage.getItem('currentUser')) || { role: 'guest' };
+
+        data.forEach(pasien => {
+            const card = document.createElement('div');
+            card.className = "glass p-5 mb-4 relative overflow-hidden";
+            
+            // Logika Kondisional: Jika BUKAN guest, tampilkan tombol aksi
+            let tombolAksi = '';
+            if (currentUser.role !== 'guest') {
+                tombolAksi = `
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="showDetail('${pasien.id}')" class="flex-1 bg-black text-white py-2 rounded-xl text-[10px] font-bold uppercase">Detail</button>
+                        <button onclick="pulangkanPasien('${pasien.id}')" class="bg-red-100 text-red-600 px-4 py-2 rounded-xl text-[10px] font-bold uppercase">Pulangkan</button>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-black text-blue-600 uppercase mb-1">Bed ${pasien.bed}</p>
+                        <h3 class="text-lg font-black text-gray-800 uppercase">${pasien.nama}</h3>
+                        <p class="text-[10px] text-gray-500 font-bold">RM: ${pasien.rm}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-3 py-1 bg-gray-100 rounded-full text-[9px] font-black uppercase">${pasien.jaminan}</span>
+                    </div>
+                </div>
+                ${tombolAksi} 
+            `;
+            
+            container.appendChild(card);
+        });
+    }
+
+
+    function toggleManualJaminan() {
+        const select = document.getElementById('selectJaminan');
+        const manualDiv = document.getElementById('inputJaminanManual');
+        const finalInput = document.getElementById('finalJaminan');
+        const customInput = document.getElementById('jaminanCustom');
+
+        if (select.value === "MANUAL") {
+            manualDiv.classList.remove('hidden');
+            finalInput.value = customInput.value;
+        } else {
+            manualDiv.classList.add('hidden');
+            finalInput.value = select.value;
+        }
+    }
+
+
+</script>
 
     <div id="modalObat" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
     <div class="glass w-full max-w-lg p-6 overflow-y-auto max-h-[95vh] shadow-2xl bg-white/95 border-red-100">
@@ -752,6 +893,60 @@ window.addEventListener('load', () => {
         <span class="text-2xl">💊</span>
     </button>
 </div>
+
+<div id="modalDetailPasien" class="fixed inset-0 bg-black/60 hidden z-[70] flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="glass w-full max-w-sm p-6 bg-white shadow-2xl relative overflow-y-auto max-h-[90vh]">
+        <button onclick="tutupDetailPasien()" class="absolute top-4 right-4 text-gray-400 font-bold p-2">✕</button>
+        
+        <div class="text-center mb-6">
+            <div id="detBed" class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-black mb-2 uppercase">Bed --</div>
+            <h3 id="detNama" class="text-xl font-black text-gray-800 uppercase leading-tight">Nama Pasien</h3>
+            <p id="detRM" class="text-xs text-gray-500 font-bold">RM: 000000</p>
+        </div>
+
+        <div class="space-y-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+            <div class="grid grid-cols-2 gap-4 border-b border-gray-200 pb-3">
+                <div>
+                    <p class="text-[8px] font-black text-gray-400 uppercase">DPJP</p>
+                    <p id="detDPJP" class="text-sm font-bold text-gray-700">-</p>
+                </div>
+                <div>
+                    <p class="text-[8px] font-black text-gray-400 uppercase">Spesialisasi</p>
+                    <p id="detSpesialis" class="text-sm font-bold text-gray-700">-</p>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-[8px] font-black text-gray-400 uppercase">Diagnosa Masuk</p>
+                <p id="detDiagnosa" class="text-sm font-bold text-gray-700 italic">-</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 pt-2">
+                <div>
+                    <p class="text-[8px] font-black text-gray-400 uppercase">Agama</p>
+                    <p id="detAgama" class="text-sm font-bold text-gray-700">-</p>
+                </div>
+                <div>
+                    <p class="text-[8px] font-black text-gray-400 uppercase">Jaminan</p>
+                    <p id="detJaminan" class="text-sm font-bold text-gray-700">-</p>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-[8px] font-black text-gray-400 uppercase">Alamat Lengkap</p>
+                <p id="detAlamat" class="text-xs font-medium text-gray-600">-</p>
+            </div>
+
+            <div class="pt-2 border-t border-gray-200">
+                <p class="text-[8px] font-black text-gray-400 uppercase">Berat Badan</p>
+                <p id="detBB" class="text-sm font-bold text-gray-700">- kg</p>
+            </div>
+        </div>
+
+        <button onclick="tutupDetailPasien()" class="w-full mt-6 py-3 bg-gray-800 text-white rounded-xl font-black text-xs uppercase tracking-widest active:scale-95 transition-all">Tutup Detail</button>
+    </div>
+</div>
+
 
 </body>
 </html>
