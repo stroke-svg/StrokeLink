@@ -111,13 +111,26 @@
     width: 100%;
     padding-right: 50px; /* Beri ruang agar angka tidak tertutup satuan */
 }
+.input-wrapper {
+    position: relative; /* Pastikan pembungkus adalah patokan posisi */
+    display: flex;
+    align-items: center;
+}
+
 .input-wrapper .unit {
     position: absolute;
-    right: 12px;
+    right: 12px; /* Ubah dari -12px menjadi 12px (positif) */
     font-size: 10px;
     font-weight: 800;
-    color: #94a3b8; /* Warna abu-abu lembut */
-    pointer-events: none; /* Agar tetap bisa klik input meski terkena teks ini */
+    color: #94a3b8;
+    pointer-events: none;
+    background-color: white; /* Opsional: agar teks satuan punya background bersih */
+    padding-left: 4px;
+}
+
+/* Tambahkan ini agar teks yang diketik user tidak tertimpa satuan */
+.input-wrapper input {
+    padding-right: 45px !important; 
 }
 
     </style>
@@ -501,6 +514,16 @@
         const form = document.getElementById('formReg');
         const user = sessionStorage.getItem('currentUser') || "Unknown"; 
 
+        // --- TAMBAHAN LOGIKA BUG FIX ---
+        const selectJaminan = document.getElementById('selectJaminan').value;
+        if (selectJaminan === "MANUAL") {
+            document.getElementById('finalJaminan').value = document.getElementById('jaminanCustom').value;
+        } else {
+            document.getElementById('finalJaminan').value = selectJaminan;
+        }
+        // -------------------------------
+
+
         if (!form.rm.value || !form.nama.value || !form.bed.value) {
             alert("Mohon lengkapi No. RM, Nama, dan Bed!");
             return;
@@ -706,6 +729,9 @@ _Sent via STROKE-LINK RSPAD Gatot Soebroto_`;
         document.getElementById('detBB').innerText = (p[5] || "-") + " kg";
         document.getElementById('detDPJP').innerText = p[6] || "-";
         document.getElementById('detSpesialis').innerText = p[7] || "-";
+        document.getElementById('detJaminan').innerText = p[8] || "-";
+        document.getElementById('detAlamat').innerText = p[9] || "-";
+        document.getElementById('detAgama').innerText = p[11] || "-";
         document.getElementById('modalDetailPasien').classList.remove('hidden');
     }
 
@@ -799,20 +825,27 @@ _Sent via STROKE-LINK RSPAD Gatot Soebroto_`;
     }
 
 
-    function toggleManualJaminan() {
-        const select = document.getElementById('selectJaminan');
-        const manualDiv = document.getElementById('inputJaminanManual');
-        const finalInput = document.getElementById('finalJaminan');
-        const customInput = document.getElementById('jaminanCustom');
+        function toggleManualJaminan() {
+            const select = document.getElementById('selectJaminan');
+            const manualDiv = document.getElementById('inputJaminanManual');
+            const finalInput = document.getElementById('finalJaminan');
+            const customInput = document.getElementById('jaminanCustom');
 
-        if (select.value === "MANUAL") {
-            manualDiv.classList.remove('hidden');
-            finalInput.value = customInput.value;
-        } else {
-            manualDiv.classList.add('hidden');
-            finalInput.value = select.value;
+            if (select.value === "MANUAL") {
+                manualDiv.classList.remove('hidden');
+                // Ambil nilai dari input custom
+                finalInput.value = customInput.value;
+                
+                // Tambahkan fungsi agar saat mengetik, nilainya langsung ter-update
+                customInput.oninput = function() {
+                    finalInput.value = customInput.value;
+                };
+            } else {
+                manualDiv.classList.add('hidden');
+                finalInput.value = select.value;
+            }
         }
-    }
+
 
 
 </script>
