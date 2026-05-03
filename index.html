@@ -589,7 +589,7 @@ RPO: ${data.rpo}
 RPD: ${data.rpd}
 
 *O (Objective)*
-TTV: TD ${data.td} mmHg, HR ${data.hr} x/i, RR ${data.rr} x/i, Suhu ${data.su} °C
+TTV: TD ${data.td} mmHg, HR ${data.hr} x/menit, RR ${data.rr} x/menit, Suhu ${data.su} °C
 GCS: ${data.gcs} (${data.detailGCS})
 Neuro: ${data.neuro}
 
@@ -845,6 +845,35 @@ _Sent via STROKE-LINK RSPAD Gatot Soebroto_`;
                 finalInput.value = select.value;
             }
         }
+
+
+        function hitungGCS() {
+            // Mengambil nilai dari input E, V, dan M
+            const e = parseInt(document.getElementById('gcsE').value) || 0;
+            const v = parseInt(document.getElementById('gcsV').value) || 0;
+            const m = parseInt(document.getElementById('gcsM').value) || 0;
+
+            // Menghitung total
+            const total = e + v + m;
+
+            // Menampilkan hasil ke elemen totalGCS
+            const displayTotal = document.getElementById('totalGCS');
+            
+            if (displayTotal) {
+                displayTotal.innerText = total;
+                
+                // Opsional: Memberikan warna merah jika GCS rendah (Emergency)
+                if (total <= 8 && total > 0) {
+                    displayTotal.className = "text-red-600 font-black animate-pulse";
+                } else {
+                    displayTotal.className = "text-red-700 font-black italic";
+                }
+            }
+        }
+
+
+
+
 
 
 
